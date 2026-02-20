@@ -1,0 +1,90 @@
+
+/* Main background wrapper */
+.container-full {
+  padding: 30px;
+  background-color: #f4f6f8;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.title-main {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+/* --- TOP BAR: Forced Horizontal --- */
+.control-panel {
+  display: flex;
+  justify-content: space-between; /* Pushes items to Left, Center, Right */
+  align-items: center;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.upload-btn-wrapper {
+  flex: 1; /* Equal spacing */
+}
+
+.convert-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.download-section {
+  flex: 1;
+  text-align: right;
+}
+
+/* Button Styles */
+.btn-blue {
+  padding: 10px 25px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-green {
+  padding: 10px 25px;
+  background-color: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* --- TEXT VIEWS: Forced Side-by-Side --- */
+.views-row {
+  display: flex;
+  flex-direction: row; /* THIS FORCES SIDE-BY-SIDE */
+  gap: 20px;
+  height: 500px; /* Gives the boxes actual height */
+}
+
+.box-wrapper {
+  flex: 1; /* Makes both boxes take up 50% width */
+  display: flex;
+  flex-direction: column;
+}
+
+.text-area {
+  flex: 1;
+  padding: 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  resize: none;
+  font-family: monospace;
+  font-size: 14px;
+}
