@@ -12,12 +12,11 @@ export default function App() {
   const [fileName, setFileName] = useState(""); 
   const [selectedFile, setSelectedFile] = useState(null);
   const timerRef = useRef(null);
+  const [activePage, setActivePage] = useState("Home");
 
   const handleUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    // Save the file name without the .txt extension
 
     setSelectedFile(file);
 
@@ -41,10 +40,6 @@ export default function App() {
     timerRef.current = setInterval(() => setSeconds(s => s + 1), 1000);
     
     try {
-      // // Simulate API call
-      // await new Promise(r => setTimeout(r, 3000));
-      // setIpynbText('{\n "cells": [{"cell_type": "code", "source": ["spark.sql(...)"]}],\n "nbformat": 4\n}');
-
       const formData = new FormData();
       formData.append("target", selectedFile);
 
@@ -57,7 +52,6 @@ export default function App() {
       
       let data;
       try {
-        // 2. Try to turn that text into JSON
         data = JSON.parse(responseText);
       } catch (parseError) {
         console.error("Server sent back HTML instead of JSON:", responseText);
@@ -96,7 +90,6 @@ export default function App() {
     const a = document.createElement("a");
     a.href = url;
     
-    // Download with the original file name
     a.download = fileName ? `${fileName}.ipynb` : "converted_spark.ipynb";
     
     a.click();
@@ -106,88 +99,126 @@ export default function App() {
   return (
     <div className="app-container">
       
-      {/* --- TOP GREEN HEADER --- */}
+      {/* --- 1. TOP HEADER (Full Width) --- */}
       <div className="header-banner">
         <img src={appLogo} alt="App Logo" className="header-logo" />
         <h1 className="header-title">ODI~Databricks ETL Code Migration</h1>
       </div>
 
-      {/* --- CONTROL BAR --- */}
-      <div className="control-bar">
+      {/* --- 2. CENTER PART OF THE PAGE --- */}
+      <div className="center-part">
         
-        {/* Upload Section with File Name Display */}
-        <div className="control-left">
-          <div className="upload-wrapper">
-            <label className="btn btn-convert">
-              Upload .txt
-              <input type="file" accept=".txt" onChange={handleUpload} style={{ display: 'none' }} />
-            </label>
-            <span className="file-name-label">
-              {fileName ? `📄 ${fileName}.txt` : "No file selected"}
-            </span>
+        {/* --- LEFT SIDE OF CENTER PART (Icons Only) --- */}
+        <div className="sidebar-slim">
+          <div title="Home" className={`sidebar-icon-wrapper ${activePage === "Home" ? "active" : ""}`} onClick={() => setActivePage("Home")}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <div title="About" className={`sidebar-icon-wrapper ${activePage === "About" ? "active" : ""}`} onClick={() => setActivePage("About")}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div title="Info" className={`sidebar-icon-wrapper ${activePage === "Info" ? "active" : ""}`} onClick={() => setActivePage("Info")}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+          <div title="Chat" className={`sidebar-icon-wrapper ${activePage === "Chat" ? "active" : ""}`} onClick={() => setActivePage("Chat")}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
           </div>
         </div>
 
-        <div className="control-center"> 
-          <button className="btn btn-convert" onClick={handleConvert} disabled={!sqlText || isConverting}>
-            {isConverting ? "Converting..." : "Convert!"}
-          </button>
+        {/* --- RIGHT SIDE OF CENTER PART (The Pages) --- */}
+        <div className="page-wrapper">
+          
+          {/* PAGE 1: HOME CONVERTER */}
+          {activePage === "Home" && (
+            <>
+              <div className="control-bar">
+                <div className="control-left">
+                  <div className="upload-wrapper">
+                    <label className="btn btn-convert">
+                      Upload .txt
+                      <input type="file" accept=".txt" onChange={handleUpload} style={{ display: 'none' }} />
+                    </label>
+                    <span className="file-name-label">
+                      {fileName ? `📄 ${fileName}.txt` : "No file selected"}
+                    </span>
+                  </div>
+                </div>
 
-          <span className="time-tracker">
-            {isConverting ? (
-              <>⚡ Igniting Spark... {seconds}s</>
-            ) : seconds > 0 ? (
-              <>🚀 Sparked in {seconds}s!</>
-            ) : (
-              <>⏱️ Ready to ignite</>
-            )}
-          </span>
-        </div>
+                <div className="control-center"> 
+                  <button className="btn btn-convert" onClick={handleConvert} disabled={!sqlText || isConverting}>
+                    {isConverting ? "Converting..." : "Convert!"}
+                  </button>
+                  <span className="time-tracker">
+                    {isConverting ? (
+                      <>⚡ Igniting Spark... {seconds}s</>
+                    ) : seconds > 0 ? (
+                      <>🚀 Sparked in {seconds}s!</>
+                    ) : (
+                      <>⏱️ Ready to ignite</>
+                    )}
+                  </span>
+                </div>
 
-        <div className="control-right">
-          <button className="btn btn-convert" onClick={handleDownload} disabled={!ipynbText}>
-            Download .ipynb
-          </button>
-        </div>
-      </div>
+                <div className="control-right">
+                  <button className="btn btn-convert" onClick={handleDownload} disabled={!ipynbText}>
+                    Download .ipynb
+                  </button>
+                </div>
+              </div>
 
-      <div className="divider"></div>
+              <div className="divider"></div>
 
-      {/* --- FULL SCREEN WORKSPACE --- */}
-      <div className="workspace">
-        
-        <div className="pane">
-          {/* <div className="pane-header">Paste one version of a text here (Standard SQL)</div> */}
-          <div className="pane-content">
-            <SyntaxHighlighter 
-              language="sql" 
-              style={vs} 
-              wrapLongLines={false} 
-              className="syntax-highlighter-custom"
-            >
-              {sqlText || "-- Your uploaded .txt file content will appear here..."}
-            </SyntaxHighlighter>
+              <div className="workspace">
+                <div className="pane">
+                  <div className="pane-content">
+                    <SyntaxHighlighter language="sql" style={vs} wrapLongLines={false} className="syntax-highlighter-custom">
+                      {sqlText || "-- Your uploaded .txt file content will appear here..."}
+                    </SyntaxHighlighter>
+                  </div>
+                </div>
+
+                <div className="pane">
+                  <div className="pane-content">
+                    <textarea className="pane-textarea" value={ipynbText} readOnly placeholder="Converted .ipynb code will appear here..." />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* PAGE 2: ABOUT */}
+          {activePage === "About" && (
+            <div className="placeholder-page"><h2>About Flytics</h2></div>
+          )}
+
+          {/* PAGE 3: INFO */}
+          {activePage === "Info" && (
+            <div className="placeholder-page"><h2>Information</h2></div>
+          )}
+
+          {/* PAGE 4: CHAT */}
+          {activePage === "Chat" && (
+            <div className="placeholder-page"><h2>Support Chat</h2></div>
+          )}
+
+          {/* Footer inside the page wrapper */}
+          <div className="footer-bar">
+            <p>&copy; {new Date().getFullYear()} Flytics. All rights reserved.</p>
           </div>
+
         </div>
-
-        <div className="pane">
-          {/*   <div className="pane-header">Paste another version of the text here (Jupyter Notebook)</div> */}
-          <div className="pane-content">
-            <textarea 
-              className="pane-textarea" 
-              value={ipynbText} 
-              readOnly 
-              placeholder="Converted .ipynb code will appear here..." 
-            />
-          </div>
-        </div>
-
       </div>
-
-      <div className="footer-bar">
-        <p>&copy; {new Date().getFullYear()} Flytics. All rights reserved.</p>
-      </div>
-
     </div>
   );
 }
