@@ -284,6 +284,57 @@ html, body, #root {
   font-family: Arial, sans-serif;
 }
 
+
 .footer-bar p {
   margin: 0;
+}
+
+/* ========================================= */
+/* --- NEW CSS ADDED FOR CHAT PANEL --- */
+/* ========================================= */
+
+.chat-panel {
+  width: 320px;
+  background-color: #fbfbfb;
+  border-right: 1px solid #eaeaea;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.chat-header {
+  padding: 15px 20px;
+  font-weight: bold;
+  font-size: 18px;
+  color: #193450;
+  border-bottom: 1px solid #eaeaea;
+  background-color: white;
+}
+
+.chat-body {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.chat-input-container {
+  padding: 15px;
+  border-top: 1px solid #eaeaea;
+  background-color: white;
+}
+
+.chat-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  font-family: Arial, sans-serif;
+}
+
+.chat-input:focus {
+  border-color: #2e6296;
 }
