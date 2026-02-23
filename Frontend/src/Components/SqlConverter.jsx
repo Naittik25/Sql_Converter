@@ -1,16 +1,26 @@
 import React, { useState, useRef } from 'react';
-import './SqlConverter.css'; // <--- THIS LINK IS THE MOST IMPORTANT PART
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import './SqlConverter.css';
+import appLogo from '../assets/image.png'; 
 
 export default function App() {
   const [sqlText, setSqlText] = useState("");
   const [ipynbText, setIpynbText] = useState("");
   const [isConverting, setIsConverting] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const [fileName, setFileName] = useState(""); 
+  
   const timerRef = useRef(null);
 
   const handleUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    // Save the file name without the .txt extension
+    const nameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
+    setFileName(nameWithoutExtension);
+
     const reader = new FileReader();
     reader.onload = (ev) => {
       setSqlText(ev.target.result);
@@ -36,49 +46,98 @@ export default function App() {
   };
 
   const handleDownload = () => {
+    if (!ipynbText) return;
     const blob = new Blob([ipynbText], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "file.ipynb";
+    
+    // Download with the original file name
+    a.download = fileName ? `${fileName}.ipynb` : "converted_spark.ipynb";
+    
     a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="container-full">
-      <h2 className="title-main">SQL to Spark SQL Converter</h2>
+    <div className="app-container">
+      
+      {/* --- TOP GREEN HEADER --- */}
+      <div className="header-banner">
+        <img src={appLogo} alt="App Logo" className="header-logo" />
+        <h1 className="header-title">SQL to Spark SQL Converter</h1>
+      </div>
 
-      {/* Control Panel (Upper Side) */}
-      <div className="control-panel">
-        <div className="upload-btn-wrapper">
-          <input type="file" accept=".txt" onChange={handleUpload} />
+      {/* --- CONTROL BAR --- */}
+      <div className="control-bar">
+        
+        {/* Upload Section with File Name Display */}
+        <div className="control-left">
+          <div className="upload-wrapper">
+            <label className="btn btn-outline">
+              Upload .txt
+              <input type="file" accept=".txt" onChange={handleUpload} style={{ display: 'none' }} />
+            </label>
+            <span className="file-name-label">
+              {fileName ? `📄 ${fileName}.txt` : "No file selected"}
+            </span>
+          </div>
         </div>
 
-        <div className="convert-section">
-          <button className="btn-blue" onClick={handleConvert} disabled={!sqlText || isConverting}>
-            {isConverting ? "Converting..." : "Convert to Spark SQL"}
+        <div className="control-center"> 
+          <button className="btn btn-convert" onClick={handleConvert} disabled={!sqlText || isConverting}>
+            {isConverting ? "Converting..." : "Convert!"}
           </button>
-          <span style={{fontWeight: 'bold'}}>Time taken: {seconds}s</span>
+
+          <span className="time-tracker">
+            {isConverting ? (
+              <>⚡ Igniting Spark... {seconds}s</>
+            ) : seconds > 0 ? (
+              <>🚀 Sparked in {seconds}s!</>
+            ) : (
+              <>⏱️ Ready to ignite</>
+            )}
+          </span>
         </div>
 
-        <div className="download-section">
-          <button className="btn-green" onClick={handleDownload} disabled={!ipynbText}>
+        <div className="control-right">
+          <button className="btn btn-outline" onClick={handleDownload} disabled={!ipynbText}>
             Download .ipynb
           </button>
         </div>
       </div>
 
-      {/* Side-by-Side Text Views */}
-      <div className="views-row">
-        <div className="box-wrapper">
-          <h4>Input (.txt)</h4>
-          <textarea className="text-area" value={sqlText} readOnly placeholder="SQL shows here..." />
+      <div className="divider"></div>
+
+      {/* --- FULL SCREEN WORKSPACE --- */}
+      <div className="workspace">
+        
+        <div className="pane">
+          {/* <div className="pane-header">Paste one version of a text here (Standard SQL)</div> */}
+          <div className="pane-content">
+            <SyntaxHighlighter 
+              language="sql" 
+              style={vs} 
+              wrapLongLines={false} 
+              className="syntax-highlighter-custom"
+            >
+              {sqlText || "-- Your uploaded .txt file content will appear here..."}
+            </SyntaxHighlighter>
+          </div>
         </div>
 
-        <div className="box-wrapper">
-          <h4>Output (.ipynb)</h4>
-          <textarea className="text-area" value={ipynbText} readOnly placeholder="Notebook JSON shows here..." />
+        <div className="pane">
+          {/* <div className="pane-header">Paste another version of the text here (Jupyter Notebook)</div> */}
+          <div className="pane-content">
+            <textarea 
+              className="pane-textarea" 
+              value={ipynbText} 
+              readOnly 
+              placeholder="Converted .ipynb code will appear here..." 
+            />
+          </div>
         </div>
+
       </div>
     </div>
   );
