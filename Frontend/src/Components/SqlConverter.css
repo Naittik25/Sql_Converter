@@ -115,14 +115,6 @@ html, body, #root {
   cursor: not-allowed;
 }
 
-.btn-outline {
-  background-color: white;
-  color: #333;
-  border: 1px solid #ccc;
-}
-.btn-outline:hover:not(:disabled) {
-  background-color: #f9f9f9;
-}
 
 .btn-convert {
   background-color: #2e6296; 
@@ -209,4 +201,20 @@ html, body, #root {
   background-color: white;
   color: #333;
   overflow: auto;
+}
+
+/* --- FOOTER BAR --- */
+.footer-bar {
+  background-color: #fbfbfb;
+  color: #777;
+  text-align: center;
+  padding: 10px;
+  font-size: 13px;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0; /* This forces the footer to stay at the exact bottom! */
+  font-family: Arial, sans-serif;
+}
+
+.footer-bar p {
+  margin: 0;
 }

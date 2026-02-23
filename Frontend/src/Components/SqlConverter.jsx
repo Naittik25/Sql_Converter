@@ -74,7 +74,7 @@ export default function App() {
         {/* Upload Section with File Name Display */}
         <div className="control-left">
           <div className="upload-wrapper">
-            <label className="btn btn-outline">
+            <label className="btn btn-convert">
               Upload .txt
               <input type="file" accept=".txt" onChange={handleUpload} style={{ display: 'none' }} />
             </label>
@@ -101,7 +101,7 @@ export default function App() {
         </div>
 
         <div className="control-right">
-          <button className="btn btn-outline" onClick={handleDownload} disabled={!ipynbText}>
+          <button className="btn btn-convert" onClick={handleDownload} disabled={!ipynbText}>
             Download .ipynb
           </button>
         </div>
@@ -127,7 +127,7 @@ export default function App() {
         </div>
 
         <div className="pane">
-          {/* <div className="pane-header">Paste another version of the text here (Jupyter Notebook)</div> */}
+          {/*   <div className="pane-header">Paste another version of the text here (Jupyter Notebook)</div> */}
           <div className="pane-content">
             <textarea 
               className="pane-textarea" 
@@ -139,6 +139,11 @@ export default function App() {
         </div>
 
       </div>
+
+      <div className="footer-bar">
+        <p>&copy; {new Date().getFullYear()} Flytics. All rights reserved.</p>
+      </div>
+
     </div>
   );
 }
