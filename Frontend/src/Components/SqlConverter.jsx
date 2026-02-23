@@ -10,7 +10,7 @@ export default function App() {
   const [isConverting, setIsConverting] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [fileName, setFileName] = useState(""); 
-  
+  const [selectedFile, setSelectedFile] = useState(null);
   const timerRef = useRef(null);
 
   const handleUpload = (e) => {
@@ -18,6 +18,9 @@ export default function App() {
     if (!file) return;
 
     // Save the file name without the .txt extension
+
+    setSelectedFile(file);
+
     const nameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
     setFileName(nameWithoutExtension);
 
@@ -31,15 +34,56 @@ export default function App() {
   };
 
   const handleConvert = async () => {
+    if(!selectedFile) return;
+
     setIsConverting(true);
     setSeconds(0);
     timerRef.current = setInterval(() => setSeconds(s => s + 1), 1000);
     
     try {
-      // Simulate API call
-      await new Promise(r => setTimeout(r, 3000));
-      setIpynbText('{\n "cells": [{"cell_type": "code", "source": ["spark.sql(...)"]}],\n "nbformat": 4\n}');
-    } finally {
+      // // Simulate API call
+      // await new Promise(r => setTimeout(r, 3000));
+      // setIpynbText('{\n "cells": [{"cell_type": "code", "source": ["spark.sql(...)"]}],\n "nbformat": 4\n}');
+
+      const formData = new FormData();
+      formData.append("target", selectedFile);
+
+      const response = await fetch('http://localhost:8080/convert', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const responseText = await response.text();
+      
+      let data;
+      try {
+        // 2. Try to turn that text into JSON
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("Server sent back HTML instead of JSON:", responseText);
+        throw new Error(`Server crashed (Status ${response.status}). Check your Node.js backend terminal for the exact error!`);
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Conversion failed");
+      }
+
+      const cleanNotebook = {
+        nbformat: data.notebook.nbformat || 4,
+        nbformat_minor: data.notebook.nbformat_minor || 4,
+        metadata: data.notebook.metadata || {},
+        cells: data.notebook.cells.map((cell) => ({
+          cell_type: cell.cell_type,
+          source: cell.source
+        }))
+      };
+
+      setIpynbText(JSON.stringify(cleanNotebook, null, 2));
+    } 
+    catch(error){
+      console.error("Conversion error:", error);
+      alert(error.message);
+    }finally {
       clearInterval(timerRef.current);
       setIsConverting(false);
     }
@@ -65,7 +109,7 @@ export default function App() {
       {/* --- TOP GREEN HEADER --- */}
       <div className="header-banner">
         <img src={appLogo} alt="App Logo" className="header-logo" />
-        <h1 className="header-title">SQL to Spark SQL Converter</h1>
+        <h1 className="header-title">ODI~Databricks ETL Code Migration</h1>
       </div>
 
       {/* --- CONTROL BAR --- */}
