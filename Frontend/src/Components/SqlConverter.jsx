@@ -3,8 +3,10 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './SqlConverter.css';
 import appLogo from '../assets/image.png'; 
-
-// Import your new separate page files!
+import {IoCode} from 'react-icons/io5';
+import { IoIosInformationCircleOutline } from "react-icons/io";
+import { BsChatLeft } from "react-icons/bs";
+import { BiUser } from "react-icons/bi";
 import About from './About';
 import Info from './Info';
 import Chat from './Chat';
@@ -62,7 +64,7 @@ export default function App() {
         console.error("Server sent back HTML instead of JSON:", responseText);
         throw new Error(`Server crashed (Status ${response.status}). Check your Node.js backend terminal for the exact error!`);
       }
-
+1
       if (!response.ok) {
         throw new Error(data.error || "Conversion failed");
       }
@@ -113,29 +115,19 @@ export default function App() {
         
         {/* LEFT SIDEBAR (Icons Only) */}
         <div className="sidebar-slim">
-          <div title="Home" className={`sidebar-icon-wrapper ${activePage === "Home" ? "active" : ""}`} onClick={() => setActivePage("Home")}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="16 18 22 12 16 6"></polyline>
-              <polyline points="8 6 2 12 8 18"></polyline>
-            </svg>
-          </div>
+          <div title="Home" 
+              className={`sidebar-icon-wrapper ${activePage === "Home" ? "active" : ""}`} 
+              onClick={() => setActivePage("Home")}>
+            <IoCode size={24} />
+          </div>  
           <div title="About" className={`sidebar-icon-wrapper ${activePage === "About" ? "active" : ""}`} onClick={() => setActivePage("About")}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+            <BiUser size={24} />
           </div>
           <div title="Info" className={`sidebar-icon-wrapper ${activePage === "Info" ? "active" : ""}`} onClick={() => setActivePage("Info")}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
+            <IoIosInformationCircleOutline size={24} />
           </div>
           <div title="Chat" className={`sidebar-icon-wrapper ${activePage === "Chat" ? "active" : ""}`} onClick={() => setActivePage("Chat")}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
+            <BsChatLeft size={24} />
           </div>
         </div>
 
