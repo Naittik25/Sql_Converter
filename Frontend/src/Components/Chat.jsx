@@ -1,4 +1,6 @@
 import React from 'react';
+import './Chat.css';
+import { RiSendPlaneFill } from "react-icons/ri";
 
 export default function Chat() {
   return (
@@ -11,6 +13,9 @@ export default function Chat() {
       </div>
       <div className="chat-input-container">
         <input type="text" className="chat-input" placeholder="Type a message..." />
+        <button className="chat-send-button">
+          <RiSendPlaneFill size={20} />
+        </button>
       </div>
     </div>
   );
