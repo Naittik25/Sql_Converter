@@ -12,6 +12,7 @@ import About from "./About";
 import Info from "./Info";
 import Chat from "./Chat";
 import Profile from "./Profile";
+import { showError } from "../utils/toast";
 
 export default function App() {
   const [sqlText, setSqlText] = useState("");
@@ -50,15 +51,19 @@ export default function App() {
 
     try {
 
-      const {token} = localStorage.getItem("token") ? JSON.parse(localStorage.getItem("token")) : {};
-      if(!token) return alert("You must be logged in to convert files!");
+      // const {token} = localStorage.getItem("token") ? JSON.parse(localStorage.getItem("token")) : {};
+      // if(!token) return alert("You must be logged in to convert files!");
 
+      const token = localStorage.getItem("token");
 
       const formData = new FormData();
       formData.append("target", selectedFile);
 
       const response = await fetch("http://localhost:8080/gemini/generate", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
         body: formData,
       });
 
@@ -81,7 +86,7 @@ export default function App() {
       setIpynbText(JSON.stringify(data, null, 2));
     } catch (error) {
       console.error("Conversion error:", error);
-      alert(error.message);
+      showError(error.message);
     } finally {
       clearInterval(timerRef.current);
       setIsConverting(false);

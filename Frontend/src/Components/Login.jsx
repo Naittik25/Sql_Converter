@@ -11,6 +11,7 @@ import {
   FiEyeOff,
 } from "react-icons/fi";
 import appLogo from "../assets/image.png";
+import { showSuccess, showError } from "../utils/toast";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -31,13 +32,13 @@ export default function Login() {
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
             navigate("/converter");
-            alert("Login successful! Welcome to your workspace.");
+            showSuccess("Login successful! Redirecting...");
         } else {
-            alert(data.message || "Login failed");
+            showError("Login failed. Please check your credentials.");
         }
     } catch (error) {
         console.error("Connection error:", error);
-        alert("Unable to connect to the server. Please try again later.");
+        showError("Unable to connect to the server. Please try again later.");
     }
   };
 

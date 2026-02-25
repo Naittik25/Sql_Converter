@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Profile.css";
 import {
@@ -6,32 +6,65 @@ import {
   FiMail,
   FiSmartphone,
   FiLogOut,
-  FiEdit2,
-  FiBriefcase,
-  FiCheck,
-  FiX,
+  FiArrowLeft,
+  FiFileText,
   FiAlertTriangle,
+  FiList,
+  FiCpu,
+  FiClock,
+  FiHash,
+  FiDatabase,
+  FiCheckCircle
 } from "react-icons/fi";
 
 export default function Profile() {
-  const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
+  // const [isEditing, setIsEditing] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [userData, setUserData] = useState({
-    name: "Naitik Patel",
-    email: "naitikpatel1205@gmail.com",
-    mobile: "+91 98765 43210",
-    role: "Data Engineering Specialist",
-    batch: "2025-26 Batch",
-  });
+  const [view, setView] = useState("info");
+  const [logs, setLogs] = useState([]);
+
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const userData = {
+    name: storedUser?.name || "User",
+    email: storedUser?.email || "N/A",
+    mobile: storedUser?.mobile_number || "N/A",
+  };
 
   const confirmLogout = () => {
-    window.location.href = "/login";
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    setIsEditing(false);
-  };
+  useEffect(() => {
+    if (view === "logs") {
+      const fetchUserLogs = async () => {
+        const token = localStorage.getItem("token");
+        try {
+          const response = await fetch(
+            "http://localhost:8080/db/logs",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+          const data = await response.json();
+          setLogs(Array.isArray(data) ? data : []);
+          if (response.ok) setLogs(data);
+        } catch (error) {
+          console.error("Error fetching logs:", error);
+        }
+      };
+      fetchUserLogs();
+    }
+  }, [view]);
+
+  // const handleSave = (e) => {
+  //   e.preventDefault();
+  //   setIsEditing(false);
+  // };
 
   return (
     <div className="profile-main-wrapper">
@@ -41,7 +74,9 @@ export default function Profile() {
           <div className="profile-letter-avatar">{userData.name.charAt(0)}</div>
           <div className="profile-name-stack">
             <h1>{userData.name}</h1>
-            <span className="profile-tagline">{userData.role}</span>
+            <span className="profile-tagline">
+              {view === "info" ? userData.role : "Activity Logs & History"}
+            </span>
           </div>
         </div>
 
@@ -55,12 +90,26 @@ export default function Profile() {
               <FiX /> Cancel
             </button>
           )} */}
+          {/* <button classname="btn-modern logs-btn" onc */}
+          {view === "info" ? (
+            <button
+              className="btn-modern logs-btn"
+              onClick={() => setView("logs")}
+            >
+              <FiList /> Activity Logs
+            </button>
+          ) : (
+            <button
+              className="btn-modern back-btn"
+              onClick={() => setView("info")}
+            >
+              <FiArrowLeft /> Back to Profile
+            </button>
+          )}
           <button
             className="btn-modern logout-trigger-btn"
             onClick={() => {
-              setShowLogoutModal(true)
-              localStorage.removeItem("token");
-              localStorage.removeItem("user");
+              setShowLogoutModal(true);
             }}
           >
             <FiLogOut /> Logout
@@ -69,8 +118,9 @@ export default function Profile() {
       </div>
 
       <div className="profile-body-content">
-        {!isEditing ? (
-          /* --- UNIQUE LIST VIEW --- */
+        {/* {!isEditing ? ( */}
+        {view === "info" ? (
+          /* PERSONAL INFO VIEW */
           <div className="profile-info-stack animate-fade-in">
             <div className="info-item-linear">
               <div className="info-icon-circle">
@@ -81,7 +131,6 @@ export default function Profile() {
                 <p>{userData.name}</p>
               </div>
             </div>
-
             <div className="info-item-linear">
               <div className="info-icon-circle">
                 <FiMail />
@@ -91,7 +140,6 @@ export default function Profile() {
                 <p>{userData.email}</p>
               </div>
             </div>
-
             <div className="info-item-linear">
               <div className="info-icon-circle">
                 <FiSmartphone />
@@ -101,20 +149,53 @@ export default function Profile() {
                 <p>{userData.mobile}</p>
               </div>
             </div>
-
-            <div className="info-item-linear">
-              <div className="info-icon-circle">
-                <FiBriefcase />
-              </div>
-              <div className="info-text-group">
-                <label>Current Assignment</label>
-                <p>
-                  {userData.role} • {userData.batch}
-                </p>
-              </div>
-            </div>
           </div>
         ) : (
+          /* LOG TABLE VIEW */
+          <div className="profile-logs-master-container animate-fade-in">
+            {/* The scrollable wrapper for all columns */}
+            <div className="logs-scroll-viewport">
+              <table className="logs-detailed-table">
+                <thead>
+                  <tr>
+                    <th><FiHash /> ID</th>
+                    <th><FiFileText /> Input File</th>
+                    <th><FiCheckCircle /> Output File</th>
+                    <th>Input Tokens</th>
+                    <th>Cached Tokens</th>
+                    <th>Output Tokens</th>
+                    <th>Total Tokens</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {logs.length > 0 ? logs.map((log, idx) => (
+                    <tr key={idx}>
+                      <td className="sticky-id">#{log.id}</td>
+                      <td>{log.target_file_name}</td>
+                      <td>{log.output_file_name}</td>
+                      <td>{log.input_tokens}</td>
+                      <td className={log.cached_tokens > 0 ? "highlight-cache" : ""}>
+                        {log.cached_tokens || 0}
+                      </td>
+                      <td>{log.output_tokens}</td>
+                      <td className="total-cell">{log.total_tokens}</td>
+                      <td><b>{(log.time_taken_ms / 1000).toFixed(2)}s</b></td>
+                      <td><span className={`status-pill ${log.status}`}>{log.status}</span></td>
+                      <td className="date-cell">{new Date(log.created_at).toLocaleString()}</td>
+                    </tr>
+                  )) : (
+                    <tr><td colSpan="10" className="no-data-text">No conversion records available.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+      {/* ) : (
           <form
             className="profile-form-linear animate-slide-up"
             onSubmit={handleSave}
@@ -153,8 +234,7 @@ export default function Profile() {
               <FiCheck /> Apply Changes
             </button>
           </form>
-        )}
-      </div>
+        )} */}
 
       {/* --- LOGOUT CONFIRMATION POP-UP (MODAL) --- */}
       {showLogoutModal && (

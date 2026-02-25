@@ -40,3 +40,7 @@
 .read-the-docs {
   color: #888;
 }
+
+.custom-progress {
+  background: conic-gradient(#ffffff 0%, #2e6296 100%);
+}
