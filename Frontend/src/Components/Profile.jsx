@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './Profile.css';
-import { FiUser, FiMail, FiSmartphone, FiLogOut, FiEdit2, FiBriefcase, FiCheck, FiX, FiAlertTriangle } from "react-icons/fi";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./Profile.css";
+import {
+  FiUser,
+  FiMail,
+  FiSmartphone,
+  FiLogOut,
+  FiEdit2,
+  FiBriefcase,
+  FiCheck,
+  FiX,
+  FiAlertTriangle,
+} from "react-icons/fi";
 
 export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -11,11 +21,11 @@ export default function Profile() {
     email: "naitikpatel1205@gmail.com",
     mobile: "+91 98765 43210",
     role: "Data Engineering Specialist",
-    batch: "2025-26 Batch"
+    batch: "2025-26 Batch",
   });
 
   const confirmLogout = () => {
-    window.location.href = '/login';
+    window.location.href = "/login";
   };
 
   const handleSave = (e) => {
@@ -25,7 +35,6 @@ export default function Profile() {
 
   return (
     <div className="profile-main-wrapper">
-      
       {/* --- HEADER BLOCK --- */}
       <div className="profile-header-premium">
         <div className="profile-id-section">
@@ -35,18 +44,25 @@ export default function Profile() {
             <span className="profile-tagline">{userData.role}</span>
           </div>
         </div>
-        
+
         <div className="profile-header-actions">
           {/* {!isEditing ? (
             <button className="btn-modern edit-btn" onClick={() => setIsEditing(true)}>
               <FiEdit2 /> Edit Profile
             </button>
-          ) : (
+          ) : ( 
             <button className="btn-modern cancel-btn" onClick={() => setIsEditing(false)}>
               <FiX /> Cancel
             </button>
           )} */}
-          <button className="btn-modern logout-trigger-btn" onClick={() => setShowLogoutModal(true)}>
+          <button
+            className="btn-modern logout-trigger-btn"
+            onClick={() => {
+              setShowLogoutModal(true)
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+            }}
+          >
             <FiLogOut /> Logout
           </button>
         </div>
@@ -57,7 +73,9 @@ export default function Profile() {
           /* --- UNIQUE LIST VIEW --- */
           <div className="profile-info-stack animate-fade-in">
             <div className="info-item-linear">
-              <div className="info-icon-circle"><FiUser /></div>
+              <div className="info-icon-circle">
+                <FiUser />
+              </div>
               <div className="info-text-group">
                 <label>Full Identity</label>
                 <p>{userData.name}</p>
@@ -65,7 +83,9 @@ export default function Profile() {
             </div>
 
             <div className="info-item-linear">
-              <div className="info-icon-circle"><FiMail /></div>
+              <div className="info-icon-circle">
+                <FiMail />
+              </div>
               <div className="info-text-group">
                 <label>Registered Email</label>
                 <p>{userData.email}</p>
@@ -73,7 +93,9 @@ export default function Profile() {
             </div>
 
             <div className="info-item-linear">
-              <div className="info-icon-circle"><FiSmartphone /></div>
+              <div className="info-icon-circle">
+                <FiSmartphone />
+              </div>
               <div className="info-text-group">
                 <label>Mobile Contact</label>
                 <p>{userData.mobile}</p>
@@ -81,29 +103,55 @@ export default function Profile() {
             </div>
 
             <div className="info-item-linear">
-              <div className="info-icon-circle"><FiBriefcase /></div>
+              <div className="info-icon-circle">
+                <FiBriefcase />
+              </div>
               <div className="info-text-group">
                 <label>Current Assignment</label>
-                <p>{userData.role} • {userData.batch}</p>
+                <p>
+                  {userData.role} • {userData.batch}
+                </p>
               </div>
             </div>
           </div>
         ) : (
-          
-          <form className="profile-form-linear animate-slide-up" onSubmit={handleSave}>
+          <form
+            className="profile-form-linear animate-slide-up"
+            onSubmit={handleSave}
+          >
             <div className="input-row-modern">
               <label>Full Name</label>
-              <input type="text" value={userData.name} onChange={(e) => setUserData({...userData, name: e.target.value})} />
+              <input
+                type="text"
+                value={userData.name}
+                onChange={(e) =>
+                  setUserData({ ...userData, name: e.target.value })
+                }
+              />
             </div>
             <div className="input-row-modern">
               <label>Email Address</label>
-              <input type="email" value={userData.email} onChange={(e) => setUserData({...userData, email: e.target.value})} />
+              <input
+                type="email"
+                value={userData.email}
+                onChange={(e) =>
+                  setUserData({ ...userData, email: e.target.value })
+                }
+              />
             </div>
             <div className="input-row-modern">
               <label>Mobile</label>
-              <input type="text" value={userData.mobile} onChange={(e) => setUserData({...userData, mobile: e.target.value})} />
+              <input
+                type="text"
+                value={userData.mobile}
+                onChange={(e) =>
+                  setUserData({ ...userData, mobile: e.target.value })
+                }
+              />
             </div>
-            <button type="submit" className="save-submit-btn"><FiCheck /> Apply Changes</button>
+            <button type="submit" className="save-submit-btn">
+              <FiCheck /> Apply Changes
+            </button>
           </form>
         )}
       </div>
@@ -112,12 +160,24 @@ export default function Profile() {
       {showLogoutModal && (
         <div className="modal-overlay">
           <div className="logout-modal-card">
-            <div className="modal-warning-icon"><FiAlertTriangle /></div>
+            <div className="modal-warning-icon">
+              <FiAlertTriangle />
+            </div>
             <h2>Confirm Logout</h2>
-            <p>Are you sure you want to end your current session? You will need to login again to access your workspace.</p>
+            <p>
+              Are you sure you want to end your current session? You will need
+              to login again to access your workspace.
+            </p>
             <div className="modal-btn-group">
-              <button className="modal-btn confirm" onClick={confirmLogout}>Yes, Logout</button>
-              <button className="modal-btn stay" onClick={() => setShowLogoutModal(false)}>Keep me here</button>
+              <button className="modal-btn confirm" onClick={confirmLogout}>
+                Yes, Logout
+              </button>
+              <button
+                className="modal-btn stay"
+                onClick={() => setShowLogoutModal(false)}
+              >
+                Keep me here
+              </button>
             </div>
           </div>
         </div>
