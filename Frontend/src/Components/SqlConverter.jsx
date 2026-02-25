@@ -13,7 +13,6 @@ import Info from "./Info";
 import Chat from "./Chat";
 import Profile from "./Profile";
 
-
 export default function App() {
   const [sqlText, setSqlText] = useState("");
   const [ipynbText, setIpynbText] = useState("");
@@ -50,10 +49,15 @@ export default function App() {
     timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
 
     try {
+
+      const {token} = localStorage.getItem("token") ? JSON.parse(localStorage.getItem("token")) : {};
+      if(!token) return alert("You must be logged in to convert files!");
+
+
       const formData = new FormData();
       formData.append("target", selectedFile);
 
-      const response = await fetch("http://localhost:8080/convert", {
+      const response = await fetch("http://localhost:8080/gemini/generate", {
         method: "POST",
         body: formData,
       });
@@ -69,22 +73,12 @@ export default function App() {
           `Server crashed (Status ${response.status}). Check your Node.js backend terminal for the exact error!`,
         );
       }
-      
+
       if (!response.ok) {
         throw new Error(data.error || "Conversion failed");
       }
 
-      const cleanNotebook = {
-        nbformat: data.notebook.nbformat || 4,
-        nbformat_minor: data.notebook.nbformat_minor || 4,
-        metadata: data.notebook.metadata || {},
-        cells: data.notebook.cells.map((cell) => ({
-          cell_type: cell.cell_type,
-          source: cell.source,
-        })),
-      };
-
-      setIpynbText(JSON.stringify(cleanNotebook, null, 2));
+      setIpynbText(JSON.stringify(data, null, 2));
     } catch (error) {
       console.error("Conversion error:", error);
       alert(error.message);
@@ -110,7 +104,7 @@ export default function App() {
       {/* --- 1. TOP HEADER --- */}
       <div className="header-banner">
         <img src={appLogo} alt="App Logo" className="header-logo" />
-        <h1 className="header-title">ODI~Databricks ETL Code Migration</h1>
+        <h1 className="header-title">SQL~SparkSQL Code Migration</h1>
       </div>
       {/* --- 2. CENTER PART --- */}
       <div className="center-part">
@@ -144,7 +138,10 @@ export default function App() {
           >
             <BsChatLeft size={24} />
           </div>
-          <div className="sidebar-bottom-group" style={{ marginTop: 'auto', marginBottom: '15px' }}>
+          <div
+            className="sidebar-bottom-group"
+            style={{ marginTop: "auto", marginBottom: "15px" }}
+          >
             <div
               title="Profile"
               className={`sidebar-icon-wrapper ${activePage === "Profile" ? "active" : ""}`}
@@ -242,6 +239,13 @@ export default function App() {
                         style={vs}
                         wrapLongLines={false}
                         className="syntax-highlighter-custom"
+                        showLineNumbers={true}
+                        lineNumberStyle={{
+                          minWidth: "3em",
+                          paddingRight: "1em",
+                          color: "#999",
+                          textAlign: "right",
+                        }}
                       >
                         {sqlText ||
                           "-- Your uploaded .txt file content will appear here..."}
@@ -251,12 +255,21 @@ export default function App() {
 
                   <div className="pane">
                     <div className="pane-content">
-                      <textarea
+                      {/* <textarea
                         className="pane-textarea"
                         value={ipynbText}
                         readOnly
                         placeholder="Converted .ipynb code will appear here..."
-                      />
+                      /> */}
+                      <SyntaxHighlighter
+                        language="json"
+                        style={vs}
+                        showLineNumbers={true}
+                        className="syntax-highlighter-custom"
+                      >
+                        {ipynbText ||
+                          "Converted .ipynb code will appear here..."}
+                      </SyntaxHighlighter>
                     </div>
                   </div>
                 </div>

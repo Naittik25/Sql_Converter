@@ -5,15 +5,17 @@
   padding: 0;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   margin: 0 !important;
   padding: 0 !important;
   height: 100% !important;
-  width: 100% !important; 
+  width: 100% !important;
   max-width: none !important;
   background-color: white;
   font-family: Arial, Helvetica, sans-serif;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 /* Main Container (Restored to 100vw as requested) */
@@ -23,12 +25,12 @@ html, body, #root {
   height: 100vh;
   width: 100vw;
   background-color: white;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 /* --- HEADER BANNER --- */
 .header-banner {
-  background-color: #ffffff; 
+  background-color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -65,8 +67,8 @@ html, body, #root {
 
 /* The left side of the center part */
 .sidebar-slim {
-  width: 50px; 
-  background-color: #ffffff; 
+  width: 50px;
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -82,19 +84,19 @@ html, body, #root {
   display: flex;
   justify-content: center;
   align-items: center;
-  color:  #2e6296;
+  color: #2e6296;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .sidebar-icon-wrapper:hover {
-  background-color:  #2e6296;
+  background-color: #2e6296;
   color: #ffffff;
 }
 
 .sidebar-icon-wrapper.active {
-  background-color:  #2e6296; 
+  background-color: #2e6296;
   color: #ffffff;
 }
 
@@ -123,7 +125,9 @@ html, body, #root {
 }
 
 /* Create 3 equal columns to guarantee the center stays perfectly centered */
-.control-left, .control-right, .control-center {
+.control-left,
+.control-right,
+.control-center {
   flex: 1;
   display: flex;
 }
@@ -133,7 +137,7 @@ html, body, #root {
 }
 
 .control-right {
-  justify-content: center; 
+  justify-content: center;
   flex-direction: column;
   align-items: center; /* Pushes Clear to the far right */
 }
@@ -183,7 +187,7 @@ html, body, #root {
 }
 
 .btn-convert {
-  background-color: #2e6296; 
+  background-color: #2e6296;
   color: white;
   border: none;
   font-weight: bold;
@@ -209,7 +213,7 @@ html, body, #root {
 .workspace {
   display: flex;
   flex-direction: row;
-  flex-grow: 1; 
+  flex-grow: 1;
   padding: 20px;
   gap: 20px;
   min-height: 0;
@@ -218,12 +222,12 @@ html, body, #root {
 }
 
 .pane {
-  flex: 1; 
+  flex: 1;
   display: flex;
   flex-direction: column;
   border: 1px solid #ccc;
   background-color: white;
-  min-width: 0; 
+  min-width: 0;
 }
 
 .pane-header {
@@ -241,7 +245,7 @@ html, body, #root {
 .pane-content {
   flex-grow: 1;
   background-color: white;
-  overflow: hidden; 
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -251,8 +255,18 @@ html, body, #root {
   margin: 0 !important;
   padding: 15px !important;
   height: 100%;
+  font-family: 'Fira Code', 'Courier New', monospace !important;
+  font-size: 14px !important;
   overflow: auto !important;
   background-color: white !important;
+}
+
+.react-syntax-highlighter-line-number {
+  font-style: normal !important;
+  color: #858585 !important;
+  padding-right: 15px !important;
+  border-right: 1px solid #e0e0e0; /* Adds a vertical line like VS Code */
+  margin-right: 10px;
 }
 
 .pane-textarea {
@@ -287,10 +301,9 @@ html, body, #root {
   padding: 10px;
   font-size: 13px;
   border-top: 1px solid #e0e0e0;
-  flex-shrink: 0; 
+  flex-shrink: 0;
   font-family: Arial, sans-serif;
 }
-
 
 .footer-bar p {
   margin: 0;
