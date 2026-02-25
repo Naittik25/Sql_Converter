@@ -11,6 +11,7 @@ import {
   FiEyeOff,
 } from "react-icons/fi";
 import appLogo from "../assets/image.png";
+import { showSuccess, showError, showWarning, showInfo } from "../utils/toast";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -29,6 +30,12 @@ export default function Register() {
 
   const handleSendOtp = async (e) => {
     e.preventDefault();
+
+    if (otpSent) {
+      showInfo("OTP has already been sent! Please check your mobile.");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:8080/auth/signup", {
         method: "POST",
@@ -43,13 +50,13 @@ export default function Register() {
       const data = await response.json();
       if (response.ok) {
         setOtpSent(true);
-        alert("OTP sent to your mobile number!");
+        showSuccess("OTP sent to your mobile number!");
       } else {
-        alert(data.message || "Failed to send OTP");
+        showError(data.message || "Failed to send OTP");
       }
     } catch (error) {
       console.error("Connection error:", error);
-      alert("Unable to connect to the server. Please try again later.");
+      showError("Unable to connect to the server. Please try again later.");
     }
   };
 
@@ -74,21 +81,29 @@ export default function Register() {
     e.preventDefault();
 
     if (!validateEmail(email)) {
-      alert(
-        "Invalid email format! Email must start with a character/number, followed by @, characters, and a dot.",
-      );
+      showWarning("Invalid email format! Please enter a valid email.");
       return;
     }
 
     if (passwords.password !== passwords.confirmPassword) {
-      alert("Passwords do not match!");
+      showWarning("Passwords do not match!");
       return;
     }
 
     if (!validatePassword(passwords.password)) {
-      alert(
-        "Password must contain at least 8 characters, including one uppercase, one lowercase, one number, and one special character.",
+      showWarning(
+        "Password must contain 8+ characters, uppercase, lowercase, number & special character.",
       );
+      return;
+    }
+
+    if (!otpSent) {
+      showWarning("Please request OTP first.");
+      return;
+    }
+
+    if (!otp || otp.length !== 6) {
+      showWarning("Please enter a valid 6-digit OTP.");
       return;
     }
 
@@ -105,10 +120,10 @@ export default function Register() {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem("token", data.token);
-        alert("Registration successful! Please log in.");
+        showSuccess("Registration successful! Please log in.");
         navigate("/login");
       } else {
-        alert(data.message || "Registration failed");
+        showError(data.message || "Registration failed");
       }
     } catch (error) {
       console.error("Connection error:", error);
@@ -127,12 +142,13 @@ export default function Register() {
         <form className="register-form" onSubmit={handleRegister}>
           <div className="register-input-group">
             <FiUser className="register-input-icon" />
-            <input 
-                type="text" 
-                placeholder="Full Name" 
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required />
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
           </div>
 
           <div className="register-input-group">
@@ -148,16 +164,18 @@ export default function Register() {
 
           <div className="register-input-group register-otp-group">
             <FiSmartphone className="register-input-icon" />
-            <input 
-                type="tel" 
-                placeholder="Mobile Number" 
-                value={mobile_number}
-                onChange={(e) => setMobileNumber(e.target.value)}
-                required />
+            <input
+              type="tel"
+              placeholder="Mobile Number"
+              value={mobile_number}
+              onChange={(e) => setMobileNumber(e.target.value)}
+              required
+            />
             <button
               className={`register-otp-btn ${otpSent ? "sent" : ""}`}
               onClick={handleSendOtp}
               type="button"
+              value={otp}
             >
               {otpSent ? "Sent!" : "Get OTP"}
             </button>
@@ -166,12 +184,13 @@ export default function Register() {
           {otpSent && (
             <div className="register-input-group register-animate-slide">
               <FiKey className="register-input-icon" />
-              <input 
-                type="text" 
-                placeholder="Enter 6-digit OTP" 
+              <input
+                type="text"
+                placeholder="Enter 6-digit OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                required />
+                required
+              />
             </div>
           )}
 

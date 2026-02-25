@@ -14,7 +14,7 @@ export default function Info() {
           prone to human error and consumes valuable engineering hours.
         </p>
         <p className="info-text">
-          The <strong>Flytics ODI~Databricks Migration Tool</strong> automates
+          The <strong>Flytics SQL~Databricks Code Migration Tool</strong> automates
           this pipeline. By simply uploading a raw <code>.txt</code> file
           containing your legacy ODI SQL extracts, our engine instantly
           translates the logic and wraps it into a fully structured,

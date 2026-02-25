@@ -34,7 +34,7 @@ body,
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 30px 20px;
+  padding: 25px 20px;
   position: relative;
   flex-shrink: 0;
   border-bottom: 1px solid #eaeaea; /* Optional: adds a nice line under header */
