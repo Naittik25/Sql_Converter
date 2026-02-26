@@ -10,10 +10,7 @@ import {
   FiFileText,
   FiAlertTriangle,
   FiList,
-  FiCpu,
-  FiClock,
   FiHash,
-  FiDatabase,
   FiCheckCircle
 } from "react-icons/fi";
 
@@ -120,7 +117,6 @@ export default function Profile() {
       <div className="profile-body-content">
         {/* {!isEditing ? ( */}
         {view === "info" ? (
-          /* PERSONAL INFO VIEW */
           <div className="profile-info-stack animate-fade-in">
             <div className="info-item-linear">
               <div className="info-icon-circle">
@@ -151,9 +147,7 @@ export default function Profile() {
             </div>
           </div>
         ) : (
-          /* LOG TABLE VIEW */
           <div className="profile-logs-master-container animate-fade-in">
-            {/* The scrollable wrapper for all columns */}
             <div className="logs-scroll-viewport">
               <table className="logs-detailed-table">
                 <thead>
@@ -236,7 +230,6 @@ export default function Profile() {
           </form>
         )} */}
 
-      {/* --- LOGOUT CONFIRMATION POP-UP (MODAL) --- */}
       {showLogoutModal && (
         <div className="modal-overlay">
           <div className="logout-modal-card">
