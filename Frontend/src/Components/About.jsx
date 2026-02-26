@@ -8,7 +8,6 @@ import { FiLayers, FiCpu, FiPieChart } from "react-icons/fi";
 export default function About() {
   return (
     <div className="about-page-wrapper">
-      {/* --- HERO SECTION --- */}
       <div className="about-hero-section">
         <h1 className="about-hero-title">Empowering Data Engineering</h1>
         <p className="about-hero-subtitle">
@@ -21,7 +20,6 @@ export default function About() {
       </div>
 
       <div className="about-main-content">
-        {/* --- EXPERTISE SECTION --- */}
         <div className="about-section-header">
           <h2>Our Expertise</h2>
           <div className="header-underline"></div>
@@ -70,7 +68,6 @@ export default function About() {
           </div>
         </div>
 
-        {/* --- HOW IT WORKS (Updated Content) --- */}
         <div className="about-section-header" style={{ marginTop: "60px" }}>
           <h2>How Flytics Works</h2>
           <div className="header-underline"></div>
@@ -122,7 +119,6 @@ export default function About() {
           </div>
         </div>
 
-        {/* --- CONNECT SECTION (With New Email Link) --- */}
         <div className="about-connect-box">
           <div className="connect-text-area">
             <h3>Ready to transform your workflow?</h3>
@@ -131,7 +127,6 @@ export default function About() {
               data journey.
             </p>
 
-            {/* NEW EMAIL SECTION */}
             <p className="inquiry-email">
               <strong>Inquiries:</strong>{" "}
               <a href="mailto:services@flyticsglob.com">

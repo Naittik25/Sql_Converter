@@ -5,7 +5,6 @@ export default function Info() {
   return (
     <div className="info-container">
       <div className="info-content">
-        {/* --- OVERVIEW SECTION --- */}
         <h2 className="info-title">Overview</h2>
         <p className="info-text">
           Organizations modernizing their data platforms face a massive
@@ -14,17 +13,15 @@ export default function Info() {
           prone to human error and consumes valuable engineering hours.
         </p>
         <p className="info-text">
-          The <strong>Flytics SQL~Databricks Code Migration Tool</strong> automates
-          this pipeline. By simply uploading a raw <code>.txt</code> file
-          containing your legacy ODI SQL extracts, our engine instantly
+          The <strong>Flytics SQL~Databricks Code Migration Tool</strong>{" "}
+          automates this pipeline. By simply uploading a raw <code>.txt</code>{" "}
+          file containing your legacy ODI SQL extracts, our engine instantly
           translates the logic and wraps it into a fully structured,
           Databricks-compatible Jupyter Notebook (<code>.ipynb</code>), complete
           with proper JSON metadata and cell formatting.
         </p>
 
-        {/* --- CARDS GRID (Challenges vs Results) --- */}
         <div className="info-grid">
-          {/* Challenges Card */}
           <div className="info-card">
             <h3 className="info-card-title">Migration Challenges</h3>
             <ul className="info-list">
@@ -50,7 +47,6 @@ export default function Info() {
             </ul>
           </div>
 
-          {/* Results Card */}
           <div className="info-card">
             <h3 className="info-card-title">Flytics Results</h3>
             <ul className="info-list">
@@ -78,7 +74,6 @@ export default function Info() {
           </div>
         </div>
 
-        {/* --- SUMMARY SECTION --- */}
         <h2 className="info-title">Summary</h2>
         <p className="info-text">
           The Flytics migration interface bridges the gap between legacy ODI

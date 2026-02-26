@@ -43,12 +43,8 @@ const ToastBox = ({ icon, title, message, type }) => {
     >
       <div style={{ fontSize: "22px" }}>{icon}</div>
       <div>
-        <div style={{ fontWeight: "600", fontSize: "15px" }}>
-          {title}
-        </div>
-        <div style={{ fontSize: "13px", opacity: 0.9 }}>
-          {message}
-        </div>
+        <div style={{ fontWeight: "600", fontSize: "15px" }}>{title}</div>
+        <div style={{ fontSize: "13px", opacity: 0.9 }}>{message}</div>
       </div>
     </div>
   );
@@ -69,7 +65,7 @@ export const showSuccess = (message) =>
       message={message}
       type="success"
     />,
-    options
+    options,
   );
 
 // ERROR
@@ -81,7 +77,7 @@ export const showError = (message) =>
       message={message}
       type="error"
     />,
-    options
+    options,
   );
 
 // WARNING
@@ -93,7 +89,7 @@ export const showWarning = (message) =>
       message={message}
       type="warning"
     />,
-    options
+    options,
   );
 
 // INFO
@@ -105,5 +101,5 @@ export const showInfo = (message) =>
       message={message}
       type="info"
     />,
-    options
+    options,
   );

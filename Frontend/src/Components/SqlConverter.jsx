@@ -8,6 +8,7 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 import { BsChatLeft } from "react-icons/bs";
 import { BiUser } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
+import { FaBeer } from "react-icons/fa";
 import About from "./About";
 import Info from "./Info";
 import Chat from "./Chat";
@@ -50,7 +51,6 @@ export default function App() {
     timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
 
     try {
-
       // const {token} = localStorage.getItem("token") ? JSON.parse(localStorage.getItem("token")) : {};
       // if(!token) return alert("You must be logged in to convert files!");
 
@@ -62,7 +62,7 @@ export default function App() {
       const response = await fetch("http://localhost:8080/gemini/generate", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
@@ -106,14 +106,11 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* --- 1. TOP HEADER --- */}
       <div className="header-banner">
         <img src={appLogo} alt="App Logo" className="header-logo" />
         <h1 className="header-title">SQL~SparkSQL Code Migration</h1>
       </div>
-      {/* --- 2. CENTER PART --- */}
       <div className="center-part">
-        {/* LEFT SIDEBAR (Icons Only) */}
         <div className="sidebar-slim">
           <div
             title="Home"
@@ -121,6 +118,14 @@ export default function App() {
             onClick={() => setActivePage("Home")}
           >
             <IoCode size={24} />
+          </div>
+          <div 
+            title="Config"
+            className={`sidebar-icon-wrapper ${activePage === "Config" ? "active" : ""}`}
+            onClick={() => setActivePage("Config")}
+          >
+            <FaBeer size={24} />
+             
           </div>
           <div
             title="About"
@@ -157,14 +162,12 @@ export default function App() {
           </div>
         </div>
 
-        {/* RIGHT SIDE (The Pages) */}
         <div className="page-wrapper">
-          {/* RENDER STANDALONE PAGES */}
           {activePage === "Profile" && <Profile />}
           {activePage === "About" && <About />}
           {activePage === "Info" && <Info />}
+          {activePage === "Config" && <Config />}
 
-          {/* RENDER HOME & CHAT (Side-by-side if Chat is active) */}
           {(activePage === "Home" || activePage === "Chat") && (
             <div
               style={{
@@ -174,10 +177,8 @@ export default function App() {
                 overflow: "hidden",
               }}
             >
-              {/* If Chat is selected, show it on the left! */}
               {activePage === "Chat" && <Chat />}
 
-              {/* The Converter stays exactly where it was, filling the rest of the space */}
               <div
                 style={{
                   display: "flex",

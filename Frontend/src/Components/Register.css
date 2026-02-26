@@ -67,7 +67,7 @@
 
 .register-input-group input {
   width: 100%;
-  padding: 14px 15px 14px 45px; 
+  padding: 14px 15px 14px 45px;
   border: 1px solid #dbe4ed;
   border-radius: 8px;
   font-size: 14px;
@@ -83,9 +83,8 @@
   box-shadow: 0 0 0 3px rgba(46, 98, 150, 0.1);
 }
 
-/* OTP Specific Styles */
 .register-otp-group input {
-  padding-right: 90px; 
+  padding-right: 90px;
 }
 
 .register-otp-btn {
@@ -149,26 +148,30 @@
   text-decoration: underline;
 }
 
-/* Animation for OTP dropdown */
 .register-animate-slide {
   animation: slideDown 0.3s ease-out;
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Eye icon inside the password field */
 .password-toggle-icon {
   position: absolute;
-  right: 15px; /* Positions it inside the right edge of the input */
+  right: 15px;
   cursor: pointer;
-  color: #a0aab5; /* Matches your .register-input-icon color */
+  color: #a0aab5;
   display: flex;
   align-items: center;
   font-size: 18px;
-  z-index: 3; /* Ensures it sits above the input field */
+  z-index: 3;
   transition: color 0.2s;
 }
 
@@ -176,7 +179,6 @@
   color: #193450;
 }
 
-/* Update your existing input padding to ensure text doesn't hide behind the eye */
 .register-input-group input[type="password"],
 .register-input-group input[type="text"] {
   padding-right: 45px;

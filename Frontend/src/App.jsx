@@ -26,7 +26,6 @@ export default function App() {
         }}
       />
       <Routes>
-        {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 

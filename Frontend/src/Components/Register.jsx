@@ -194,7 +194,6 @@ export default function Register() {
             </div>
           )}
 
-          {/* PASSWORD FIELD WITH SHOW/HIDE */}
           <div className="register-input-group">
             <FiLock className="register-input-icon" />
             <input
@@ -214,7 +213,6 @@ export default function Register() {
             </div>
           </div>
 
-          {/* CONFIRM PASSWORD FIELD WITH SHOW/HIDE */}
           <div className="register-input-group">
             <FiLock className="register-input-icon" />
             <input

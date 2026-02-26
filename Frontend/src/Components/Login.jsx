@@ -1,15 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
-import {
-  FiUser,
-  FiMail,
-  FiSmartphone,
-  FiKey,
-  FiLock,
-  FiEye,
-  FiEyeOff,
-} from "react-icons/fi";
+import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import appLogo from "../assets/image.png";
 import { showSuccess, showError } from "../utils/toast";
 
@@ -21,24 +13,24 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try { 
-        const response = await fetch("http://localhost:8080/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json"},
-            body: JSON.stringify({ email, password }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-            navigate("/converter");
-            showSuccess("Login successful! Redirecting...");
-        } else {
-            showError("Login failed. Please check your credentials.");
-        }
+    try {
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/converter");
+        showSuccess("Login successful! Redirecting...");
+      } else {
+        showError("Login failed. Please check your credentials.");
+      }
     } catch (error) {
-        console.error("Connection error:", error);
-        showError("Unable to connect to the server. Please try again later.");
+      console.error("Connection error:", error);
+      showError("Unable to connect to the server. Please try again later.");
     }
   };
 
@@ -54,12 +46,13 @@ export default function Login() {
         <form className="login-form" onSubmit={handleLogin}>
           <div className="login-input-group">
             <FiMail className="login-input-icon" />
-            <input 
-                type="text" 
-                placeholder="Email or Mobile Number" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required />
+            <input
+              type="text"
+              placeholder="Email or Mobile Number"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
           <div className="login-input-group">
@@ -89,7 +82,7 @@ export default function Login() {
         </form>
 
         <div className="login-footer-link">
-          Don't have an account? {/* USES REACT ROUTER LINK */}
+          Don't have an account?
           <Link to="/register">Register here</Link>
         </div>
       </div>
