@@ -1,159 +1,97 @@
 import React from "react";
 import "./About.css";
-
-import { FaDatabase, FaCogs, FaRobot, FaChartLine } from "react-icons/fa";
-import { BiTargetLock } from "react-icons/bi";
-import { FiLayers, FiCpu, FiPieChart } from "react-icons/fi";
+import { FiTarget, FiZap, FiShield, FiCpu, FiAward, FiArrowRight } from "react-icons/fi";
 
 export default function About() {
   return (
-    <div className="about-page-wrapper">
-      <div className="about-hero-section">
-        <h1 className="about-hero-title">Empowering Data Engineering</h1>
-        <p className="about-hero-subtitle">
-          At Flytics, we believe in the{" "}
-          <strong>"Ease of Business Decision."</strong> Our team of
-          technologists and domain experts is dedicated to accelerating your
-          growth by transforming legacy architectures into modern, scalable
-          cloud environments.
-        </p>
-      </div>
+    <div className="fw-light-page">
+      <div className="fw-grid-layer"></div>
+      
+      <div className="fw-scroll-container">
 
-      <div className="about-main-content">
-        <div className="about-section-header">
-          <h2>Our Expertise</h2>
-          <div className="header-underline"></div>
-        </div>
+        {/* HERO SECTION */}
+        <section className="fw-hero-section">
+          <div className="fw-hero-text">
+            <div className="fw-eyebrow-text">// ODI → Databricks Migration Platform</div>
+            <h1>
+              Migrate <span className="fw-stroke-text">Smarter.</span><br />
+              Run <span className="fw-stroke-text fw-blue">Faster.</span>
+            </h1>
+            <p className="fw-hero-desc">
+              Transform Oracle Data Integrator mappings into production-ready PySpark on Databricks — 
+              automated, accurate, and AI-assisted.
+            </p>
+          </div>
 
-        <div className="expertise-row">
-          <div className="expertise-card">
-            <div className="expertise-icon">
-              <FaDatabase />
+          <div className="fw-visual-flow">
+            <div className="fw-node-stack">
+              <div className="fw-box-node node-blue">Oracle ODI</div>
+              <div className="fw-node-connector">↓</div>
+              <div className="fw-box-node node-orange">Flytics Engine</div>
+              <div className="fw-node-connector">↓</div>
+              <div className="fw-box-node node-blue">Databricks</div>
             </div>
-            <h4>Data Engineering</h4>
-            <p>
-              Building robust systems to transform legacy architectures at
-              scale.
-            </p>
           </div>
-          <div className="expertise-card">
-            <div className="expertise-icon">
-              <FaCogs />
+        </section>
+
+        {/* STATS SECTION */}
+        <section className="fw-stats-bar">
+          <div className="fw-stat-item">
+            <h2>90%</h2>
+            <p>Auto Conversion Rate</p>
+          </div>
+          <div className="fw-stat-item">
+            <h2>10×</h2>
+            <p>Faster Migration</p>
+          </div>
+          <div className="fw-stat-item">
+            <h2>200+</h2>
+            <p>Mappings / Engagement</p>
+          </div>
+          <div className="fw-stat-item">
+            <h2>0</h2>
+            <p>Vendor Lock-in</p>
+          </div>
+        </section>
+
+        {/* CORE CAPABILITIES */}
+        <section className="fw-main-section">
+          <h3 className="fw-section-heading">// Core Capabilities</h3>
+          <div className="fw-capabilities-grid">
+            <div className="fw-feature-card orange-top">
+              <FiTarget className="feat-icon" />
+              <h4>ODI Repository Parser</h4>
+              <p>Reads and parses ODI XML exports, resolving mappings and lineage automatically.</p>
             </div>
-            <h4>Data Integration</h4>
-            <p>
-              Improving efficiency through seamless integration across
-              platforms.
-            </p>
-          </div>
-          <div className="expertise-card">
-            <div className="expertise-icon">
-              <FaRobot />
+            <div className="fw-feature-card blue-top">
+              <FiZap className="feat-icon blue" />
+              <h4>AI-Powered Code Gen</h4>
+              <p>Claude-driven MCP orchestration converts Oracle SQL & ODI logic into PySpark notebooks.</p>
             </div>
-            <h4>AI & ML</h4>
-            <p>
-              Deploying smart, GenAI-enabled models to accelerate complex
-              migrations.
-            </p>
-          </div>
-          <div className="expertise-card">
-            <div className="expertise-icon">
-              <FaChartLine />
+            <div className="fw-feature-card teal-top">
+              <FiShield className="feat-icon teal" />
+              <h4>Enterprise Ready</h4>
+              <p>SOC2-aligned architecture. No data leaves your secure cloud environment.</p>
             </div>
-            <h4>Data Analytics</h4>
-            <p>
-              Drawing actionable insights via visually rich, interactive
-              dashboards.
-            </p>
           </div>
-        </div>
+        </section>
 
-        <div className="about-section-header" style={{ marginTop: "60px" }}>
-          <h2>How Flytics Works</h2>
-          <div className="header-underline"></div>
-        </div>
-
-        <div className="workflow-horizontal">
-          <div className="workflow-step">
-            <div className="workflow-icon">
-              <BiTargetLock />
-            </div>
-            <h4>1. Assess & Frame</h4>
-            <p>
-              Identify legacy bottlenecks and define a clear roadmap for your
-              cloud modernization.
-            </p>
+        {/* PROCESS FLOW */}
+        <section className="fw-main-section">
+          <h3 className="fw-section-heading">// Migration Process — 4 Phases</h3>
+          <div className="fw-phases-row">
+            <div className="fw-phase-step"><div className="p-num">01</div><div className="p-text">Ingest</div></div>
+            <div className="fw-phase-step"><div className="p-num">02</div><div className="p-text">Analyze</div></div>
+            <div className="fw-phase-step"><div className="p-num">03</div><div className="p-text">Convert</div></div>
+            <div className="fw-phase-step"><div className="p-num">04</div><div className="p-text">Deploy</div></div>
           </div>
+        </section>
 
-          <div className="workflow-step">
-            <div className="workflow-icon">
-              <FiLayers />
-            </div>
-            <h4>2. Extract Assets</h4>
-            <p>
-              Securely pull legacy scripts, ODI codes, and evaluate critical
-              data dependencies.
-            </p>
-          </div>
-
-          <div className="workflow-step">
-            <div className="workflow-icon">
-              <FiCpu />
-            </div>
-            <h4>3. AI Transformation</h4>
-            <p>
-              Apply advanced GenAI models to translate and optimize your logic
-              for Databricks.
-            </p>
-          </div>
-
-          <div className="workflow-step">
-            <div className="workflow-icon">
-              <FiPieChart />
-            </div>
-            <h4>4. Deploy & Validate</h4>
-            <p>
-              Deliver structured, ready-to-run Spark code for immediate cloud
-              deployment.
-            </p>
-          </div>
-        </div>
-
-        <div className="about-connect-box">
-          <div className="connect-text-area">
-            <h3>Ready to transform your workflow?</h3>
-            <p>
-              Talk to our experts today and see how Flytics can accelerate your
-              data journey.
-            </p>
-
-            <p className="inquiry-email">
-              <strong>Inquiries:</strong>{" "}
-              <a href="mailto:services@flyticsglob.com">
-                services@flyticsglob.com
-              </a>
-            </p>
-          </div>
-
-          <div className="about-button-group">
-            <a
-              href="https://flyticsglob.com/index.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="about-link-btn primary-btn"
-            >
-              Visit Website
-            </a>
-            <a
-              href="https://www.linkedin.com/company/flytics/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="about-link-btn linkedin-btn"
-            >
-              Follow on LinkedIn
-            </a>
-          </div>
-        </div>
+        {/* FOOTER */}
+        <section className="fw-footer-cta">
+          <h2>Ready to accelerate your migration?</h2>
+          <button className="fw-btn-filled">Book a Demo →</button>
+        </section>
       </div>
     </div>
   );

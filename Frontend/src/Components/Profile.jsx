@@ -11,7 +11,7 @@ import {
   FiAlertTriangle,
   FiList,
   FiHash,
-  FiCheckCircle
+  FiCheckCircle,
 } from "react-icons/fi";
 
 export default function Profile() {
@@ -39,14 +39,11 @@ export default function Profile() {
       const fetchUserLogs = async () => {
         const token = localStorage.getItem("token");
         try {
-          const response = await fetch(
-            "http://localhost:8080/db/logs",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+          const response = await fetch("http://localhost:8080/db/logs", {
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-          );
+          });
           const data = await response.json();
           setLogs(Array.isArray(data) ? data : []);
           if (response.ok) setLogs(data);
@@ -152,9 +149,15 @@ export default function Profile() {
               <table className="logs-detailed-table">
                 <thead>
                   <tr>
-                    <th><FiHash /> ID</th>
-                    <th><FiFileText /> Input File</th>
-                    <th><FiCheckCircle /> Output File</th>
+                    <th>
+                      <FiHash /> ID
+                    </th>
+                    <th>
+                      <FiFileText /> Input File
+                    </th>
+                    <th>
+                      <FiCheckCircle /> Output File
+                    </th>
                     <th>Input Tokens</th>
                     <th>Cached Tokens</th>
                     <th>Output Tokens</th>
@@ -165,23 +168,41 @@ export default function Profile() {
                   </tr>
                 </thead>
                 <tbody>
-                  {logs.length > 0 ? logs.map((log, idx) => (
-                    <tr key={idx}>
-                      <td className="sticky-id">#{log.id}</td>
-                      <td>{log.target_file_name}</td>
-                      <td>{log.output_file_name}</td>
-                      <td>{log.input_tokens}</td>
-                      <td className={log.cached_tokens > 0 ? "highlight-cache" : ""}>
-                        {log.cached_tokens || 0}
+                  {logs.length > 0 ? (
+                    logs.map((log, idx) => (
+                      <tr key={idx}>
+                        <td className="sticky-id">#{log.id}</td>
+                        <td>{log.target_file_name}</td>
+                        <td>{log.output_file_name}</td>
+                        <td>{log.input_tokens}</td>
+                        <td
+                          className={
+                            log.cached_tokens > 0 ? "highlight-cache" : ""
+                          }
+                        >
+                          {log.cached_tokens || 0}
+                        </td>
+                        <td>{log.output_tokens}</td>
+                        <td className="total-cell">{log.total_tokens}</td>
+                        <td>
+                          <b>{(log.time_taken_ms / 1000).toFixed(2)}s</b>
+                        </td>
+                        <td>
+                          <span className={`status-pill ${log.status}`}>
+                            {log.status}
+                          </span>
+                        </td>
+                        <td className="date-cell">
+                          {new Date(log.created_at).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="10" className="no-data-text">
+                        No conversion records available.
                       </td>
-                      <td>{log.output_tokens}</td>
-                      <td className="total-cell">{log.total_tokens}</td>
-                      <td><b>{(log.time_taken_ms / 1000).toFixed(2)}s</b></td>
-                      <td><span className={`status-pill ${log.status}`}>{log.status}</span></td>
-                      <td className="date-cell">{new Date(log.created_at).toLocaleString()}</td>
                     </tr>
-                  )) : (
-                    <tr><td colSpan="10" className="no-data-text">No conversion records available.</td></tr>
                   )}
                 </tbody>
               </table>
