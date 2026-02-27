@@ -8,11 +8,14 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 import { BsChatLeft } from "react-icons/bs";
 import { BiUser } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
-import { GiUsbKey } from "react-icons/gi";
-import About from "./About";
+import { FiSettings } from "react-icons/fi";
+// import About from "./About";
+import About1 from "./About1";
 import Info from "./Info";
 import Chat from "./Chat";
 import Profile from "./Profile";
+import Convert from "./Convert";
+import Plugins from "./Plugins";
 import { showError } from "../utils/toast";
 
 export default function App() {
@@ -124,15 +127,28 @@ export default function App() {
             className={`sidebar-icon-wrapper ${activePage === "Plugins" ? "active" : ""}`}
             onClick={() => setActivePage("Plugins")}
           >
-            <GiUsbKey size={24} />
-             
+            <FiSettings size={24} />
           </div>
-          <div
+          <div 
+            title="Convert"
+            className={`sidebar-icon-wrapper ${activePage === "Convert" ? "active" : ""}`}
+            onClick={() => setActivePage("Convert")}
+          >
+            <IoCode size={24} />
+          </div>
+          {/* <div
             title="About"
             className={`sidebar-icon-wrapper ${activePage === "About" ? "active" : ""}`}
             onClick={() => setActivePage("About")}
           >
             <BiUser size={24} />
+          </div> */}
+          <div
+            title="About1"
+            className={`sidebar-icon-wrapper ${activePage === "About1" ? "active" : ""}`}
+            onClick={() => setActivePage("About1")}
+          >
+            <BiUser size={24} /> 
           </div>
           <div
             title="Info"
@@ -164,9 +180,11 @@ export default function App() {
 
         <div className="page-wrapper">
           {activePage === "Profile" && <Profile />}
-          {activePage === "About" && <About />}
+          {/* {activePage === "About" && <About />} */}
+          {activePage === "About1" && <About1 />}
           {activePage === "Info" && <Info />}
-          {activePage === "Config" && <Config />}
+          {activePage === "Convert" && <Convert />}
+          {activePage === "Plugins" && <Plugins />}
 
           {(activePage === "Home" || activePage === "Chat") && (
             <div

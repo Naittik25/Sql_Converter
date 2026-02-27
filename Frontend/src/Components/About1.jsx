@@ -1,5 +1,5 @@
 import React from 'react';
-import './About.css';
+import './About1.css';
 
 
 const FlowBox = ({ type, label, name }) => (
@@ -41,7 +41,7 @@ const CodeDots = () => (
   </div>
 );
 
-export default function About() {
+export default function About1() {
   return (
     <>
     <div className="page">
