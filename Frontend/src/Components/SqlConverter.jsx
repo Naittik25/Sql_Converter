@@ -8,7 +8,7 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 import { BsChatLeft } from "react-icons/bs";
 import { BiUser } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
-import { FaBeer } from "react-icons/fa";
+import { GiUsbKey } from "react-icons/gi";
 import About from "./About";
 import Info from "./Info";
 import Chat from "./Chat";
@@ -120,11 +120,11 @@ export default function App() {
             <IoCode size={24} />
           </div>
           <div 
-            title="Config"
-            className={`sidebar-icon-wrapper ${activePage === "Config" ? "active" : ""}`}
-            onClick={() => setActivePage("Config")}
+            title="Plugins"
+            className={`sidebar-icon-wrapper ${activePage === "Plugins" ? "active" : ""}`}
+            onClick={() => setActivePage("Plugins")}
           >
-            <FaBeer size={24} />
+            <GiUsbKey size={24} />
              
           </div>
           <div
