@@ -7,14 +7,14 @@
 }
 
 :root {
-  --bg: #ffffff;
-  --surface: #F4F6FB;
-  --border: #CBD8F0;
+  --bg: #0A0C10;
+  --surface: #111318;
+  --border: #1E2230;
   --accent: #FF4D1C;
-  --accent2: #1A56DB;
-  --text: #0D1B3E;
-  --muted: #6B7DA8;
-  --white: #0D1B3E;
+  --accent2: #00E5C3;
+  --text: #EEF0F5;
+  --muted: #6B7280;
+  --white: #ffffff;
 }
 
 body {
@@ -34,7 +34,6 @@ body {
   background: var(--bg);
   position: relative;
   overflow: hidden;
-  padding: 0;
 }
 
 .page::before {
@@ -42,8 +41,8 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(26, 86, 219, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 77, 28, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(30, 34, 48, 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 34, 48, 0.6) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
@@ -52,7 +51,7 @@ body {
 .noise {
   position: absolute;
   inset: 0;
-  opacity: 0.018;
+  opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
@@ -135,7 +134,7 @@ body {
 }
 
 .hero h1 .highlight {
-  color: white;
+  color: transparent;
   -webkit-text-stroke: 1px var(--accent);
 }
 
@@ -186,20 +185,20 @@ body {
   font-family: 'Syne', sans-serif;
   font-weight: 700;
   font-size: 13px;
-  color: var(--text);
+  color: var(--white);
 }
 
 .flow-box.src {
-  border-color: #F59E0B88;
+  border-color: #F59E0B44;
 }
 
 .flow-box.src .fb-name {
-  color: #D97706;
+  color: #F59E0B;
 }
 
 .flow-box.engine {
-  border-color: #1A56DB55;
-  background: #1A56DB0D;
+  border-color: #00E5C344;
+  background: #00E5C310;
 }
 
 .flow-box.engine .fb-name {
@@ -208,11 +207,11 @@ body {
 }
 
 .flow-box.dst {
-  border-color: #FF4D1C55;
+  border-color: #E8326444;
 }
 
 .flow-box.dst .fb-name {
-  color: var(--accent);
+  color: #E83264;
 }
 
 .flow-arrow {
@@ -354,7 +353,7 @@ body {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
   font-size: 56px;
-  color: #D0DBEF;
+  color: var(--border);
   line-height: 1;
   position: absolute;
   top: 16px;
@@ -383,7 +382,7 @@ body {
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--accent);
-  border: 1px solid #FF4D1C66;
+  border: 1px solid #FF4D1C44;
   padding: 2px 6px;
   border-radius: 2px;
   margin-bottom: 8px;
@@ -413,15 +412,15 @@ body {
 }
 
 .code-block {
-  background: #0D1B3E;
-  border: 1px solid #1A2E5A;
+  background: #080A0D;
+  border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
 }
 
 .code-header {
-  background: #152241;
-  border-bottom: 1px solid #1A2E5A;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
   padding: 8px 14px;
   display: flex;
   align-items: center;
@@ -433,7 +432,7 @@ body {
   font-size: 9px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: #6B8CC4;
+  color: var(--muted);
 }
 
 .code-header .lang.odi {
@@ -441,7 +440,7 @@ body {
 }
 
 .code-header .lang.py {
-  color: #00E5C3;
+  color: var(--accent2);
 }
 
 .code-dots {
@@ -469,7 +468,7 @@ pre {
 }
 
 pre .kw { color: #C792EA; }
-pre .fn { color: #00E5C3; }
+pre .fn { color: var(--accent2); }
 pre .str { color: #C3E88D; }
 pre .cm { color: #546E7A; font-style: italic; }
 pre .num { color: #F78C6C; }
@@ -508,7 +507,7 @@ pre .num { color: #F78C6C; }
 
 .cta-btn {
   background: var(--accent);
-  color: #ffffff;
+  color: var(--white);
   font-family: 'Syne', sans-serif;
   font-weight: 700;
   font-size: 14px;
@@ -544,14 +543,7 @@ pre .num { color: #F78C6C; }
 .fw-scroll-container::-webkit-scrollbar {
   width: 8px;
 }
-.fw-scroll-container::-webkit-scrollbar-track {
-  background: #EEF2FF;
-  border-left: 1px solid #CBD8F0;
-}
 .fw-scroll-container::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #FF4D1C, #1A56DB);
-  border-radius: 0px;
-}
-.fw-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #ff6a40, #3b72f5);
+  background: #cbd5e1;
+  border-radius: 10px;
 }
