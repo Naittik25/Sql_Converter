@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { pushAllSessions } from "../services/oracleService";
+import { convertFromGithub } from "../services/geminiService";
 import {
   FiGithub,
   FiUploadCloud,
@@ -51,22 +53,13 @@ export default function Convert() {
     setIsExtracting(true);
     setPushedFiles([]);
     try {
-      const response = await fetch(
-        "http://localhost:8080/oracle/github/push-all",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...dbCredentials,
-            gh_token: gitConfig.readerToken,
-            gh_owner: gitConfig.srcOwner,
-            gh_repo: gitConfig.srcRepo,
-            gh_folder: gitConfig.srcFolder,
-          }),
-        },
-      );
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Extraction failed");
+      const data = await pushAllSessions({
+        ...dbCredentials,
+        gh_token: gitConfig.readerToken,
+        gh_owner: gitConfig.srcOwner,
+        gh_repo: gitConfig.srcRepo,
+        gh_folder: gitConfig.srcFolder,
+      });
       setRepositoryAssets(data.files.map((f) => f.file));
       for (const fileName of data.files.map((f) => f.file)) {
         await new Promise((resolve) => setTimeout(resolve, 100));
@@ -83,6 +76,7 @@ export default function Convert() {
   };
 
   const handleConversion = async () => {
+    const token = localStorage.getItem("token");
     if (
       !gitConfig.destOwner ||
       // !gitConfig.destRepo ||
@@ -91,9 +85,6 @@ export default function Convert() {
       showError("Destination configuration incomplete.");
       return;
     }
-
-    const token = localStorage.getItem("token");
-    //const userData = JSON.parse(localStorage.getItem("user") || "{}");
 
     if (!token) {
       showError("Please login to perform conversion.");
@@ -167,23 +158,13 @@ export default function Convert() {
     //   }
     // }
     try {
-      const response = await fetch(
-        "http://localhost:8080/gemini/convert-from-github",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            ...gitConfig,
-            readerToken: gitConfig.readerToken,
-            writerToken: gitConfig.isSameRepo
-              ? gitConfig.readerToken
-              : gitConfig.writerToken,
-          }),
-        },
-      );
+      const response = await convertFromGithub({
+        ...gitConfig,
+        readerToken: gitConfig.readerToken,
+        writerToken: gitConfig.isSameRepo
+          ? gitConfig.readerToken
+          : gitConfig.writerToken,
+      });
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -197,10 +178,9 @@ export default function Convert() {
         const chunk = decoder.decode(value);
         const lines = chunk.split("\n\n");
 
-
         for (const line of lines) {
           if (line.startsWith("data: ")) {
-            const data = JSON.parse(line.replace("data: ", ""));     
+            const data = JSON.parse(line.replace("data: ", ""));
 
             if (data.trgName) {
               setRepositoryAssets((prev) => [...prev, data.trgName]);
@@ -498,11 +478,13 @@ export default function Convert() {
             <div className="card-body">
               <div className="file-display-zone grid-mode">
                 <div className="file-grid-container">
-                  {repositoryAssets.length === 0 && !isExtracting && !isConverting && (
-                    <p className="empty-msg">
-                      Pipeline standby. Start extraction to view files.
-                    </p>
-                  )}
+                  {repositoryAssets.length === 0 &&
+                    !isExtracting &&
+                    !isConverting && (
+                      <p className="empty-msg">
+                        Pipeline standby. Start extraction to view files.
+                      </p>
+                    )}
                   {repositoryAssets.map((file, index) => (
                     <div
                       key={index}

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { verifyGitConnection } from "../services/gitService";
+import { saveGitToken, getGitToken } from "../services/authService";
 import {
   FiDatabase,
   FiGithub,
@@ -28,16 +30,8 @@ export default function Plugins() {
   useEffect(() => {
     const fetchStoredToken = async () => {
       try {
-        const authToken = localStorage.getItem("token");
-        const res = await fetch("http://localhost:8080/auth/show", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-        if (res.ok) {
-          const data = await res.json();
+        const data = await getGitToken();
+        if (data && data.git_token) {
           setStoredToken(data.git_token || "");
         } else {
           setStoredToken("");
@@ -72,34 +66,19 @@ export default function Plugins() {
       showError("Please enter a GitHub Token.");
       setGitStatus({
         type: "error",
-        message:
-          "Missing required fields: GitHub Token is  mandatory.",
+        message: "Missing required fields: GitHub Token is  mandatory.",
       });
       return;
     }
 
     try {
-      const authToken = localStorage.getItem("token");
+      const verifyData = await verifyGitConnection(gitToken);
 
-      const verifyRes = await fetch(
-        "http://localhost:8080/git/verify-connection",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({ token: gitToken }),
-        },
-      );
-
-      const verifyData = await verifyRes.json();
-
-      if (!verifyRes.ok || !verifyData.success) {
+      if (!verifyData.success) {
         throw new Error(verifyData.message || "GitHub verification failed.");
       }
 
-      if (storedToken === gitToken){
+      if (storedToken === gitToken) {
         setGitUser({
           username: verifyData.user.login,
           name: verifyData.user.name || verifyData.user.login,
@@ -109,22 +88,15 @@ export default function Plugins() {
           type: "success",
           message: "Token is already up to date, No changes made. ",
         });
-        showSuccess(`Token is already up to date. Welcome, ${verifyData.user.login}!`);
+        showSuccess(
+          `Token is already up to date. Welcome, ${verifyData.user.login}!`,
+        );
         return;
       }
 
-      const saveRes = await fetch("http://localhost:8080/auth/token", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({ token: gitToken }),
-      });
+      const saveData = await saveGitToken(gitToken);
 
-      const saveData = await saveRes.json();
-
-      if (saveRes.ok) {
+      if (saveData) {
         const action = storedToken === "" ? "saved" : "updated";
 
         setStoredToken(gitToken);
@@ -141,7 +113,8 @@ export default function Plugins() {
         });
         showSuccess(`Token ${action}! Welcome, ${verifyData.user.login}!`);
       } else {
-        throw new Error(saveData.message || "Token verified but failed to save to database."
+        throw new Error(
+          saveData.message || "Token verified but failed to save to database.",
         );
       }
     } catch (error) {

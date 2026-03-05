@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import { ToastContainer, Slide } from "react-toastify";
+import axios from "./api/axios.js";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "./Components/Login";
 import Register from "./Components/Register";
