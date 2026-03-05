@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiDatabase,
   FiGithub,
@@ -19,29 +19,134 @@ export default function Plugins() {
     connectionString: "",
     isSysDBA: false,
   });
-  const [odiStatus, setOdiStatus] = useState(null); // { type: 'success' | 'error', message: string }
+  const [odiStatus, setOdiStatus] = useState(null);
   const [gitToken, setGitToken] = useState("");
+  const [storedToken, setStoredToken] = useState(null);
   const [gitUser, setGitUser] = useState(null);
-  const [gitStatus, setGitStatus] = useState(null); // { type: 'success' | 'error', message: string }
+  const [gitStatus, setGitStatus] = useState(null);
+
+  useEffect(() => {
+    const fetchStoredToken = async () => {
+      try {
+        const authToken = localStorage.getItem("token");
+        const res = await fetch("http://localhost:8080/auth/show", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setStoredToken(data.git_token || "");
+        } else {
+          setStoredToken("");
+        }
+      } catch {
+        setStoredToken("");
+      }
+    };
+    fetchStoredToken();
+  }, []);
 
   const handleTestODI = () => {
     if (odi.user && odi.connectionString) {
       showSuccess("ODI Repository connected!");
-      setOdiStatus({ type: "success", message: `Connected successfully as ${odi.user}${odi.isSysDBA ? " (SysDBA)" : ""} on ${odi.connectionString}` });
+      setOdiStatus({
+        type: "success",
+        message: `Connected successfully as ${odi.user}${odi.isSysDBA ? " (SysDBA)" : ""} on ${odi.connectionString}`,
+      });
     } else {
       showError("Please fill in all ODI credentials.");
-      setOdiStatus({ type: "error", message: "Missing required fields: User and Connection String are mandatory." });
+      setOdiStatus({
+        type: "error",
+        message:
+          "Missing required fields: User and Connection String are mandatory.",
+      });
     }
   };
 
-  const handleTestGit = () => {
-    if (gitToken) {
-      setGitUser({ username: "Naittik25", name: "Naitik Patel" });
-      showSuccess("GitHub Token verified!");
-      setGitStatus({ type: "success", message: "Token is valid and has the required permissions." });
-    } else {
-      showError("Please enter a valid GitHub Token.");
-      setGitStatus({ type: "error", message: "Token is empty. Please enter a valid GitHub Personal Access Token." });
+  const handleTestGit = async () => {
+    if (!gitToken) {
+      // showError("Please enter a valid GitHub Token.");
+      showError("Please enter a GitHub Token.");
+      setGitStatus({
+        type: "error",
+        message:
+          "Missing required fields: GitHub Token is  mandatory.",
+      });
+      return;
+    }
+
+    try {
+      const authToken = localStorage.getItem("token");
+
+      const verifyRes = await fetch(
+        "http://localhost:8080/git/verify-connection",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({ token: gitToken }),
+        },
+      );
+
+      const verifyData = await verifyRes.json();
+
+      if (!verifyRes.ok || !verifyData.success) {
+        throw new Error(verifyData.message || "GitHub verification failed.");
+      }
+
+      if (storedToken === gitToken){
+        setGitUser({
+          username: verifyData.user.login,
+          name: verifyData.user.name || verifyData.user.login,
+          avatar: verifyData.user.avatar_url,
+        });
+        setGitStatus({
+          type: "success",
+          message: "Token is already up to date, No changes made. ",
+        });
+        showSuccess(`Token is already up to date. Welcome, ${verifyData.user.login}!`);
+        return;
+      }
+
+      const saveRes = await fetch("http://localhost:8080/auth/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ token: gitToken }),
+      });
+
+      const saveData = await saveRes.json();
+
+      if (saveRes.ok) {
+        const action = storedToken === "" ? "saved" : "updated";
+
+        setStoredToken(gitToken);
+
+        setGitUser({
+          username: verifyData.user.login,
+          name: verifyData.user.name || verifyData.user.login,
+          avatar: verifyData.user.avatar_url,
+        });
+
+        setGitStatus({
+          type: "success",
+          message: `Token verified and ${action} to profile!`,
+        });
+        showSuccess(`Token ${action}! Welcome, ${verifyData.user.login}!`);
+      } else {
+        throw new Error(saveData.message || "Token verified but failed to save to database."
+        );
+      }
+    } catch (error) {
+      showError(error.message);
+      setGitStatus({ type: "error", message: error.message });
       setGitUser(null);
     }
   };
@@ -126,7 +231,11 @@ export default function Plugins() {
               </button>
               {odiStatus && (
                 <div className={`status-pill ${odiStatus.type}`}>
-                  {odiStatus.type === "success" ? <FiCheckCircle /> : <FiShield />}
+                  {odiStatus.type === "success" ? (
+                    <FiCheckCircle />
+                  ) : (
+                    <FiShield />
+                  )}
                   <span>{odiStatus.message}</span>
                 </div>
               )}
@@ -158,16 +267,27 @@ export default function Plugins() {
               </button>
               {gitStatus && (
                 <div className={`status-pill ${gitStatus.type}`}>
-                  {gitStatus.type === "success" ? <FiCheckCircle /> : <FiShield />}
+                  {gitStatus.type === "success" ? (
+                    <FiCheckCircle />
+                  ) : (
+                    <FiShield />
+                  )}
                   <span>{gitStatus.message}</span>
                 </div>
               )}
               {gitUser && (
                 <div className="success-pill">
                   <FiCheckCircle />
+                  <img
+                    src={gitUser.avatar}
+                    alt="Avatar"
+                    className="user-avatar"
+                  />
                   <div className="meta">
-                    <strong>@{gitUser.username}</strong>
-                    <span>{gitUser.name}</span>
+                    <strong className="username">@{gitUser.username}</strong>
+                    <span className="display-name">{gitUser.name}</span>
+                    {/* Blue check icon at the end to match your image */}
+                    <FiCheckCircle className="verify-icon" />
                   </div>
                 </div>
               )}

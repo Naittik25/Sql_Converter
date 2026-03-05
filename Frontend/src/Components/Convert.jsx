@@ -1,68 +1,234 @@
 import React, { useState } from "react";
-import { 
-  FiGithub, FiUploadCloud, FiCheckCircle, 
-  FiFileText, FiUser, FiBox, FiLock, FiDatabase, FiFolder
+import {
+  FiGithub,
+  FiUploadCloud,
+  FiCheckCircle,
+  FiFileText,
+  FiUser,
+  FiBox,
+  FiLock,
+  FiDatabase,
+  FiFolder,
+  FiGitBranch,
+  FiRefreshCw,
+  FiZap,
 } from "react-icons/fi";
 import { showSuccess, showError } from "../utils/toast";
 import "./Convert.css";
 
 export default function Convert() {
   const [gitConfig, setGitConfig] = useState({
-    token: "",
-    owner: "",
-    repo: "",
-    folder: "",
+    srcOwner: "",
+    srcRepo: "",
+    srcBranch: "main",
+    srcFolder: "",
+    readerToken: "",
+    destOwner: "",
+    destRepo: "",
+    destBranch: "main",
+    destFolder: "notebooks",
+    writerToken: "",
+    isSameRepo: true,
   });
-  
-  const [isPushing, setIsPushing] = useState(false);
+
+  // const [isProcessing, setIsProcessing] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
   const [pushedFiles, setPushedFiles] = useState([]);
   const [repositoryAssets, setRepositoryAssets] = useState([]);
 
   const handleGitPush = async () => {
     const dbCredentials = {
-      db_user: "sys", 
+      db_user: "sys",
       db_pass: "12345678",
       db_host: "localhost:1521",
-      db_service: "orclpdb"
+      db_service: "orcl",
     };
-
-    if (!gitConfig.token || !gitConfig.owner || !gitConfig.repo) {
-      showError("Please provide GitHub token, owner, and repository name.");
+    if (!gitConfig.readerToken || !gitConfig.srcOwner || !gitConfig.srcRepo) {
+      showError("Source credentials required for extraction.");
       return;
     }
-
-    setIsPushing(true);
+    setIsExtracting(true);
     setPushedFiles([]);
-
     try {
-      const response = await fetch("http://localhost:8080/oracle/github/push-all", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...dbCredentials,
-          gh_token: gitConfig.token,
-          gh_owner: gitConfig.owner,
-          gh_repo: gitConfig.repo,
-          gh_folder: gitConfig.folder
-        }),
-      });
-
+      const response = await fetch(
+        "http://localhost:8080/oracle/github/push-all",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...dbCredentials,
+            gh_token: gitConfig.readerToken,
+            gh_owner: gitConfig.srcOwner,
+            gh_repo: gitConfig.srcRepo,
+            gh_folder: gitConfig.srcFolder,
+          }),
+        },
+      );
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "GitHub Push failed");
-
-      const fileNames = data.files.map(f => f.file);
-      setRepositoryAssets(fileNames);
-
-      for (const fileName of fileNames) {
-        await new Promise((resolve) => setTimeout(resolve, 200));
+      if (!response.ok) throw new Error(data.error || "Extraction failed");
+      setRepositoryAssets(data.files.map((f) => f.file));
+      for (const fileName of data.files.map((f) => f.file)) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
         setPushedFiles((prev) => [...prev, fileName]);
       }
-      
-      showSuccess(`Successfully pushed ${data.files.length} ODI files to GitHub!`);
+      showSuccess(
+        `Successfully pushed ${data.files.length} ODI files to GitHub!`,
+      );
     } catch (error) {
       showError(error.message);
     } finally {
-      setIsPushing(false);
+      setIsExtracting(false);
+    }
+  };
+
+  const handleConversion = async () => {
+    if (
+      !gitConfig.destOwner ||
+      // !gitConfig.destRepo ||
+      (!gitConfig.isSameRepo && !gitConfig.writerToken)
+    ) {
+      showError("Destination configuration incomplete.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    //const userData = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!token) {
+      showError("Please login to perform conversion.");
+      return;
+    }
+    setIsConverting(true);
+    setPushedFiles([]);
+    setRepositoryAssets([]);
+    // try {
+    //   const response = await fetch(
+    //     "http://localhost:8080/gemini/convert-from-github",
+    //     {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //       body: JSON.stringify({
+    //         ...gitConfig,
+    //         readerToken: gitConfig.readerToken,
+    //         writerToken: gitConfig.isSameRepo
+    //           ? gitConfig.readerToken
+    //           : gitConfig.writerToken,
+    //       }),
+    //     },
+    //   );
+    //   const data = await response.json();
+
+    //   // if (!response.ok) throw new Error(data.error || "Extraction failed");
+    //   // setRepositoryAssets(data.files.map((f) => f.file));
+    //   // for (const fileName of data.files.map((f) => f.file)) {
+    //   //   await new Promise((resolve) => setTimeout(resolve, 100));
+    //   //   setPushedFiles((prev) => [...prev, fileName]);
+    //   // }
+    //   // showSuccess(
+    //   //   `Successfully pushed ${data.files.length} ODI files to GitHub!`,
+    //   // );
+
+    //   //  console.log("Backend Response:", data);
+
+    //   if (!response.ok) throw new Error(data.error || "Transformation failed");
+
+    //   // if (!response.ok) {
+    //   //   // Specifically catch the database constraint error
+    //   //   if (data.error && data.error.includes("check constraint")) {
+    //   //     throw new Error("Database Error: Invalid status value sent to conversion_log.");
+    //   //   }
+    //   //   throw new Error(data.error || "Transformation failed");
+    //   // }
+
+    //   if (data.results && data.results.length > 0) {
+    //     const allFiles = data.results.map((r) => r.trgName);
+
+    //     // show all files in inventory
+    //     setRepositoryAssets(allFiles);
+
+    //     // push success files one by one
+    //     for (const result of data.results) {
+    //       if (result.status === "ok") {
+    //         await new Promise((resolve) => setTimeout(resolve, 300));
+
+    //         setPushedFiles((prev) => [...prev, result.trgName]);
+    //       }
+    //     }
+
+    //     showSuccess(
+    //       `Successfully Convert ${fileNames.length} .txt files to .ipynb and push in github!`,
+    //     );
+    //   } else {
+    //     showError("Conversion successful, but file list is empty.");
+    //   }
+    // }
+    try {
+      const response = await fetch(
+        "http://localhost:8080/gemini/convert-from-github",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ...gitConfig,
+            readerToken: gitConfig.readerToken,
+            writerToken: gitConfig.isSameRepo
+              ? gitConfig.readerToken
+              : gitConfig.writerToken,
+          }),
+        },
+      );
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      let failedCount = 0;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n\n");
+
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const data = JSON.parse(line.replace("data: ", ""));     
+
+            if (data.trgName) {
+              setRepositoryAssets((prev) => [...prev, data.trgName]);
+            }
+            if (data.status === "ok") {
+              setPushedFiles((prev) => [...prev, data.trgName]);
+
+              showSuccess(`${data.trgName} converted and pushed successfully`);
+            }
+            if (data.status === "failed") {
+              showError(`Failed to convert ${data.trgName}`);
+            }
+
+            if (data.done) {
+              if (failedCount > 0) {
+                showError("Pipeline finished with some failed conversions.");
+              } else {
+                showSuccess("All files converted!");
+              }
+              return;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      showError(error.message);
+    } finally {
+      setIsConverting(false);
     }
   };
 
@@ -70,98 +236,288 @@ export default function Convert() {
     <div className="git-push-view-container">
       <div className="git-push-scroll-area">
         <header className="git-push-hero">
-          <h1 className="main-title">ODI to <span className="accent">Data Bricks</span></h1>
-          <p className="sub-title">Verify and transfer repository text assets to your version control system.</p>
+          <h1 className="main-title">
+            ODI to <span className="accent">Data Bricks</span>
+          </h1>
+          <p className="sub-title">
+            End-to-end automated pipeline for Oracle ODI metadata extraction and
+            Databricks notebook synthesis.
+          </p>
         </header>
 
         <div className="nodes-wrapper">
-          <div className="service-card">
+          <div className="service-card large-config">
             <div className="card-header">
-              <FiGithub className="header-icon" />
-              <h3>GitHub Destination</h3>
+              <FiZap className="header-icon" />
+              <h3>Migration Workflow Control</h3>
             </div>
             <div className="card-body">
-              <div className="field">
-                <label>Personal Access Token</label>
-                <div className="input-group">
-                  <FiLock />
-                  <input 
-                    type="text" 
-                    placeholder="ghp_xxxxxxxxxxxx" 
-                    value={gitConfig.token}
-                    onChange={(e) => setGitConfig({...gitConfig, token: e.target.value})}
-                  />
+              <div className="field-row">
+                <div className="field">
+                  <label>Source Access Token</label>
+                  <div className="input-group">
+                    <FiLock />
+                    <input
+                      type="password"
+                      placeholder="ghp_source_xxx"
+                      value={gitConfig.readerToken}
+                      onChange={(e) =>
+                        setGitConfig({
+                          ...gitConfig,
+                          readerToken: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+                {!gitConfig.isSameRepo && (
+                  <div className="field">
+                    <label>Destination Access Token</label>
+                    <div className="input-group">
+                      <FiLock />
+                      <input
+                        type="password"
+                        placeholder="ghp_dest_yyy"
+                        value={gitConfig.writerToken}
+                        onChange={(e) =>
+                          setGitConfig({
+                            ...gitConfig,
+                            writerToken: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <label className="checkbox-ui">
+                <input
+                  type="checkbox"
+                  checked={gitConfig.isSameRepo}
+                  onChange={(e) =>
+                    setGitConfig({ ...gitConfig, isSameRepo: e.target.checked })
+                  }
+                />
+                <span className="custom-box">
+                  <FiCheckCircle />
+                </span>
+                <span className="label-text">
+                  Synchronize destination token with source
+                </span>
+              </label>
+
+              <div className="pipeline-grid">
+                <div className="pipeline-col">
+                  <div className="divider-label">Extraction Source</div>
+                  <div className="field">
+                    <label>Namespace</label>
+                    <div className="input-group">
+                      <FiUser />
+                      <input
+                        type="text"
+                        placeholder="Owner"
+                        value={gitConfig.srcOwner}
+                        onChange={(e) =>
+                          setGitConfig({
+                            ...gitConfig,
+                            srcOwner: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="field">
+                    <label>Repository</label>
+                    <div className="input-group">
+                      <FiBox />
+                      <input
+                        type="text"
+                        placeholder="Repo"
+                        value={gitConfig.srcRepo}
+                        onChange={(e) =>
+                          setGitConfig({
+                            ...gitConfig,
+                            srcRepo: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="field">
+                    <label>Target Path</label>
+                    <div className="input-group">
+                      <FiFolder />
+                      <input
+                        type="text"
+                        placeholder="odi/src"
+                        value={gitConfig.srcFolder}
+                        onChange={(e) =>
+                          setGitConfig({
+                            ...gitConfig,
+                            srcFolder: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pipeline-col">
+                  <div className="divider-label">Deployment Target</div>
+                  <div className="field">
+                    <label>Namespace</label>
+                    <div className="input-group">
+                      <FiUser />
+                      <input
+                        type="text"
+                        placeholder="Owner"
+                        value={gitConfig.destOwner}
+                        onChange={(e) =>
+                          setGitConfig({
+                            ...gitConfig,
+                            destOwner: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="field">
+                    <label>Repository</label>
+                    <div className="input-group">
+                      <FiBox />
+                      <input
+                        type="text"
+                        placeholder="Repo"
+                        value={gitConfig.destRepo}
+                        onChange={(e) =>
+                          setGitConfig({
+                            ...gitConfig,
+                            destRepo: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="field">
+                    <label>Output Path</label>
+                    <div className="input-group">
+                      <FiFolder />
+                      <input
+                        type="text"
+                        placeholder="notebooks/"
+                        value={gitConfig.destFolder}
+                        onChange={(e) =>
+                          setGitConfig({
+                            ...gitConfig,
+                            destFolder: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="field">
-                <label>Repository Owner</label>
-                <div className="input-group">
-                  <FiUser />
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Naittik25" 
-                    value={gitConfig.owner}
-                    onChange={(e) => setGitConfig({...gitConfig, owner: e.target.value})}
-                  />
-                </div>
+
+              <div className="action-stack">
+                <button
+                  className="primary-btn"
+                  onClick={handleGitPush}
+                  disabled={isExtracting}
+                >
+                  {isExtracting ? (
+                    "Extracting..."
+                  ) : (
+                    <>
+                      <FiUploadCloud /> Push On Git
+                    </>
+                  )}
+                </button>
+                <button
+                  className="primary-btn secondary-btn"
+                  onClick={handleConversion}
+                  disabled={isConverting}
+                >
+                  {isConverting ? (
+                    "Converting..."
+                  ) : (
+                    <>
+                      <FiRefreshCw /> Convert
+                    </>
+                  )}
+                </button>
               </div>
-              <div className="field">
-                <label>Repository Name</label>
-                <div className="input-group">
-                  <FiBox />
-                  <input 
-                    type="text" 
-                    placeholder="e.g. Sql_Converter" 
-                    value={gitConfig.repo}
-                    onChange={(e) => setGitConfig({...gitConfig, repo: e.target.value})}
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label>Repository Folder</label>
-                <div className="input-group">
-                  <FiFolder />
-                  <input 
-                    type="text" 
-                    placeholder="e.g. odi_files" 
-                    value={gitConfig.folder}
-                    onChange={(e) => setGitConfig({...gitConfig, folder: e.target.value})}
-                  />
-                </div>
-              </div>
-              <button className="primary-btn" onClick={handleGitPush} disabled={isPushing}>
-                {isPushing ? "Syncing Assets..." : <><FiUploadCloud /> Push to GitHub</>}
-              </button>
             </div>
           </div>
 
-          <div className="service-card">
+          <div className="service-card assets-card">
             <div className="card-header">
               <FiDatabase className="header-icon" />
-              <h3>Repository Assets</h3>
+              <h3>Pipeline Inventory</h3>
+              {repositoryAssets.length > 0 && (
+                <span className="inv-chip-total">
+                  {repositoryAssets.length} Converted
+                </span>
+              )}
             </div>
+
+            {/* {repositoryAssets.length > 0 && (
+              <div className="inv-summary">
+                <div className="inv-counts">
+                  <span className="inv-chip total">
+                    {repositoryAssets.length} Total
+                  </span>
+                  <span className="inv-chip done">
+                    <FiCheckCircle size={11} /> {pushedFiles.length} Done
+                  </span>
+                  {repositoryAssets.length - pushedFiles.length > 0 && (
+                    <span className="inv-chip pend">
+                      {repositoryAssets.length - pushedFiles.length} Pending
+                    </span>
+                  )}
+                </div>
+                <div className="inv-progress-row">
+                  <div className="inv-track">
+                    <div
+                      className="inv-fill"
+                      style={{
+                        width: `${Math.round((pushedFiles.length / repositoryAssets.length) * 100)}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="inv-pct">
+                    {Math.round(
+                      (pushedFiles.length / repositoryAssets.length) * 100,
+                    )}
+                    %
+                  </span>
+                </div>
+              </div>
+            )} */}
+
             <div className="card-body">
               <div className="file-display-zone grid-mode">
                 <div className="file-grid-container">
-                  {repositoryAssets.length === 0 && !isPushing && (
-                    <p style={{ textAlign: 'center', color: '#94a3b8', marginTop: '50px' }}>
-                      Ready to sync from Oracle Repository.
+                  {repositoryAssets.length === 0 && !isExtracting && !isConverting && (
+                    <p className="empty-msg">
+                      Pipeline standby. Start extraction to view files.
                     </p>
                   )}
                   {repositoryAssets.map((file, index) => (
-                    <div key={index} className={`file-row-small ${pushedFiles.includes(file) ? "done" : ""}`}>
+                    <div
+                      key={index}
+                      className={`file-row-small ${pushedFiles.includes(file) ? "done" : ""}`}
+                    >
                       <FiFileText className="file-icon" />
-                      <span className="file-name">{file}</span>
-                      {pushedFiles.includes(file) && <FiCheckCircle className="file-ok" />}
+                      <span className="file-name">
+                        {file.replace(/_\d+(?=\.ipynb)/i, "")}
+                      </span>
+                      {pushedFiles.includes(file) && (
+                        <FiCheckCircle className="file-ok" />
+                      )}
                     </div>
                   ))}
                 </div>
-
-                {pushedFiles.length > 0 && pushedFiles.length === repositoryAssets.length && !isPushing && (
-                  <div className="deployment-hint">
-                    <FiCheckCircle /> <span>Ready for conversion to .ipynb</span>
-                  </div>
-                )}
               </div>
             </div>
           </div>

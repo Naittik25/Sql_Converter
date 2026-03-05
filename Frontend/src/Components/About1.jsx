@@ -82,7 +82,7 @@ export default function About1() {
         <div className="section">
           <div className="section-title">// Core Capabilities</div>
           <div className="features-grid">
-            <FeatureCard
+            <FeatureCard    
               icon="🔍"
               title="ODI Repository Parser"
               desc="Reads and parses ODI XML exports, resolving mappings, transformations, and lineage automatically."
