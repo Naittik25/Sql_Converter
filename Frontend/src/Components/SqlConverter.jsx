@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vs } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { generateGemini } from "../services/geminiService";
 import "./SqlConverter.css";
 import appLogo from "../assets/image.png";
 import { IoCode } from "react-icons/io5";
@@ -54,42 +55,14 @@ export default function App() {
     timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
 
     try {
-      // const {token} = localStorage.getItem("token") ? JSON.parse(localStorage.getItem("token")) : {};
-      // if(!token) return alert("You must be logged in to convert files!");
-
-      const token = localStorage.getItem("token");
-
-      const formData = new FormData();
-      formData.append("target", selectedFile);
-
-      const response = await fetch("http://localhost:8080/gemini/generate", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const responseText = await response.text();
-
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error("Server sent back HTML instead of JSON:", responseText);
-        throw new Error(
-          `Server crashed (Status ${response.status}). Check your Node.js backend terminal for the exact error!`,
-        );
-      }
-
-      if (!response.ok) {
-        throw new Error(data.error || "Conversion failed");
-      }
-
+      const data = await generateGemini(selectedFile);
+      //setIpynbText(data);
       setIpynbText(JSON.stringify(data, null, 2));
     } catch (error) {
-      console.error("Conversion error:", error);
-      showError(error.message);
+      console.log("FULL ERROR:", error.response);
+      showError(
+        error.response?.data?.error || error.response?.data || error.message,
+      );
     } finally {
       clearInterval(timerRef.current);
       setIsConverting(false);
@@ -122,14 +95,14 @@ export default function App() {
           >
             <IoCode size={24} />
           </div>
-          <div 
+          <div
             title="Plugins"
             className={`sidebar-icon-wrapper ${activePage === "Plugins" ? "active" : ""}`}
             onClick={() => setActivePage("Plugins")}
           >
             <FiSettings size={24} />
           </div>
-          <div 
+          <div
             title="Convert"
             className={`sidebar-icon-wrapper ${activePage === "Convert" ? "active" : ""}`}
             onClick={() => setActivePage("Convert")}
@@ -148,7 +121,7 @@ export default function App() {
             className={`sidebar-icon-wrapper ${activePage === "About1" ? "active" : ""}`}
             onClick={() => setActivePage("About1")}
           >
-            <BiUser size={24} /> 
+            <BiUser size={24} />
           </div>
           <div
             title="Info"

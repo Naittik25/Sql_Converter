@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getConversionLogs } from "../services/dbService";
 import "./Profile.css";
 import {
   FiUser,
@@ -37,16 +38,10 @@ export default function Profile() {
   useEffect(() => {
     if (view === "logs") {
       const fetchUserLogs = async () => {
-        const token = localStorage.getItem("token");
         try {
-          const response = await fetch("http://localhost:8080/db/logs", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          const data = await response.json();
-          setLogs(Array.isArray(data) ? data : []);
-          if (response.ok) setLogs(data);
+            const data = await getConversionLogs();
+            setLogs(Array.isArray(data) ? data : []);
+            // if (response.ok) setLogs(data);
         } catch (error) {
           console.error("Error fetching logs:", error);
         }

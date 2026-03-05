@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { signup, verifyOTP } from "../services/authService";
 import "./Register.css";
 import {
   FiUser,
@@ -37,17 +38,12 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          mobile_number,
-          password: passwords.password,
-        }),
+      const data = await signup({
+        name,
+        email,
+        mobile_number,
+        password: passwords.password,
       });
-      const data = await response.json();
       if (response.ok) {
         setOtpSent(true);
         showSuccess("OTP sent to your mobile number!");
@@ -108,16 +104,11 @@ export default function Register() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email,
-          mobile_number: mobile_number,
-          otp: otp,
-        }),
+      const data = await verifyOTP({
+        email,
+        mobile_number,
+        otp,
       });
-      const data = await response.json();
       if (response.ok) {
         localStorage.setItem("token", data.token);
         showSuccess("Registration successful! Please log in.");
