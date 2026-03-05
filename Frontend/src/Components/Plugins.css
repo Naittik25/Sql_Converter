@@ -181,11 +181,47 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
+  padding: 12px 16px;
   background-color: #f0fdfa;
   border: 1px solid #2e6296;
   border-radius: 8px;
+  margin-top: 5px;
   color: #193450;
+}
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid #e2e8f0;
+  object-fit: cover;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%; /* Allows icon to push to the right */
+}
+
+/* @username styling */
+.username {
+  font-size: 15px;
+  color: #193450;
+  font-weight: 700;
+}
+
+/* Full name styling */
+.display-name {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Check icon pushed to the far right */
+.verify-icon {
+  margin-left: auto;
+  color: #2e6296;
+  font-size: 16px;
 }
 
 /* Status pill - success and error variants */
