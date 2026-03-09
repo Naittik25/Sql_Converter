@@ -21,7 +21,7 @@ export const getGeminiFiles = async (params) => {
 export const convertFromGithub = async (data) => {
   const token = localStorage.getItem("token");
 
-  const response = await fetch("http://localhost:8080/gemini/convert-from-github", {
+  const response = await fetch("http://localhost:8080/gemini/convert-from-github", {  
     method: "POST",
     headers: {
       "Content-Type": "application/json",
