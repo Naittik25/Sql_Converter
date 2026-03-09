@@ -19,3 +19,8 @@ export const pushSession = async (sessionNo, data) => {
   const res = await axios.post(`/oracle/github/push/${sessionNo}`, data);
   return res.data;
 };
+
+export const checkOracleConnection = async (data) => {
+  const res = await axios.post("/oracle/check", data);
+  return res.data;
+}

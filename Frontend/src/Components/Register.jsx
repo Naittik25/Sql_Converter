@@ -44,7 +44,7 @@ export default function Register() {
         mobile_number,
         password: passwords.password,
       });
-      if (response.ok) {
+      if (data) {
         setOtpSent(true);
         showSuccess("OTP sent to your mobile number!");
       } else {
@@ -109,7 +109,7 @@ export default function Register() {
         mobile_number,
         otp,
       });
-      if (response.ok) {
+      if (data) {
         localStorage.setItem("token", data.token);
         showSuccess("Registration successful! Please log in.");
         navigate("/login");

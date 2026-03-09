@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { verifyGitConnection } from "../services/gitService";
 import { saveGitToken, getGitToken } from "../services/authService";
+import { checkOracleConnection } from "../services/oracleService";
 import {
   FiDatabase,
   FiGithub,
@@ -43,20 +44,38 @@ export default function Plugins() {
     fetchStoredToken();
   }, []);
 
-  const handleTestODI = () => {
-    if (odi.user && odi.connectionString) {
-      showSuccess("ODI Repository connected!");
-      setOdiStatus({
-        type: "success",
-        message: `Connected successfully as ${odi.user}${odi.isSysDBA ? " (SysDBA)" : ""} on ${odi.connectionString}`,
-      });
-    } else {
+  const handleTestODI = async () => {
+    if (!odi.user && !odi.connectionString) {
       showError("Please fill in all ODI credentials.");
       setOdiStatus({
         type: "error",
         message:
           "Missing required fields: User and Connection String are mandatory.",
       });
+      return;
+    }
+    try{
+      const [host, service] = odi.connectionString.split("/");
+
+      const data = await checkOracleConnection({
+        db_user: odi.user,
+        db_pass: odi.password,
+        db_host: host,
+        db_service: service,
+      });
+
+      if (data.ok){
+        showSuccess("ODI Repository connected!");
+        setOdiStatus({
+          type: "success",
+          message: `Connected as ${odi.user}${odi.isSysDBA ? " (SysDBA)" : ""} on ${odi.connectionString}`,
+      });
+      } else{
+        throw new Error(data.error || "Connection failed.");
+      }
+    } catch (error) {
+      showError(error.message);
+      setOdiStatus({type: "error", message: error.message});
     }
   };
 
