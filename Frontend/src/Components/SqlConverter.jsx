@@ -8,7 +8,7 @@ import { IoCode } from "react-icons/io5";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { BsChatLeft } from "react-icons/bs";
 import { BiUser } from "react-icons/bi";
-import { CgProfile } from "react-icons/cg";
+//import { CgProfile } from "react-icons/cg";
 import { FiSettings } from "react-icons/fi";
 // import About from "./About";
 import About1 from "./About1";
@@ -28,6 +28,9 @@ export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const timerRef = useRef(null);
   const [activePage, setActivePage] = useState("Home");
+
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const userName = storedUser?.name || "User";
 
   const handleUpload = (e) => {
     const file = e.target.files[0];
@@ -146,7 +149,10 @@ export default function App() {
               className={`sidebar-icon-wrapper ${activePage === "Profile" ? "active" : ""}`}
               onClick={() => setActivePage("Profile")}
             >
-              <CgProfile size={24} />
+              {/* <div className="sidebar-avatar-letter"> */}
+                {userName.charAt(0).toUpperCase()}
+              {/* </div> */}
+              {/* <CgProfile size={24} />                                                                                    */}
             </div>
           </div>
         </div>

@@ -58,6 +58,20 @@ body,
   overflow: hidden;
 }
 
+.sidebar-avatar-letter {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #2e6296;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 15px;
+  user-select: none;
+}
+
 .sidebar-slim {
   width: 50px;
   background-color: #ffffff;
