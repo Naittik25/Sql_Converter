@@ -18,6 +18,7 @@ import Profile from "./Profile";
 import Convert from "./Convert";
 import Plugins from "./Plugins";
 import { showError } from "../utils/toast";
+import { CONVERSION_TYPES } from "../constants/conversionTypes";
 
 export default function App() {
   const [sqlText, setSqlText] = useState("");
@@ -28,6 +29,7 @@ export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const timerRef = useRef(null);
   const [activePage, setActivePage] = useState("Home");
+  const [conversionType, setConversionType] = useState("sql-sparksql");
 
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userName = storedUser?.name || "User";
@@ -58,7 +60,7 @@ export default function App() {
     timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
 
     try {
-      const data = await generateGemini(selectedFile);
+      const data = await generateGemini(selectedFile, conversionType);
       //setIpynbText(data);
       setIpynbText(JSON.stringify(data, null, 2));
     } catch (error) {
@@ -149,9 +151,9 @@ export default function App() {
               className={`sidebar-icon-wrapper ${activePage === "Profile" ? "active" : ""}`}
               onClick={() => setActivePage("Profile")}
             >
-              {/* <div className="sidebar-avatar-letter"> */}
+              <div className="sidebar-avatar-letter">
                 {userName.charAt(0).toUpperCase()}
-              {/* </div> */}
+              </div>
               {/* <CgProfile size={24} />                                                                                    */}
             </div>
           </div>
@@ -202,7 +204,38 @@ export default function App() {
                     </div>
                   </div>
 
+                  {/* <div className="control-center">
+                    <button
+                      className="btn btn-convert"
+                      onClick={handleConvert}
+                      disabled={!sqlText || isConverting}
+                    >
+                      {isConverting ? "Converting..." : "Convert!"}
+                    </button>
+                    <span className="time-tracker">
+                      {isConverting ? (
+                        <>⚡ Igniting Spark... {seconds}s</>
+                      ) : seconds > 0 ? (
+                        <>🚀 Sparked in {seconds}s!</>
+                      ) : (
+                        <>⏱️ Ready to ignite</>
+                      )}
+                    </span>
+                  </div> */}
+
                   <div className="control-center">
+                    <select
+                      className="conversion-type-select"
+                      value={conversionType}
+                      onChange={(e) => setConversionType(e.target.value)}
+                      disabled={isConverting}
+                    >
+                      {CONVERSION_TYPES.map((t) => (
+                        <option key={t.value} value={t.value}>
+                          {t.label}
+                        </option>
+                      ))}
+                    </select>
                     <button
                       className="btn btn-convert"
                       onClick={handleConvert}

@@ -302,3 +302,18 @@ body,
 .footer-bar p {
   margin: 0;
 }
+
+.conversion-type-select {
+  width: 180px;
+  padding: 10px 12px;
+  border: 1px solid #dbe4ed;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #193450;
+  background-color: #fafbfc;
+  cursor: pointer;
+  outline: none;
+}
+.conversion-type-select:focus {
+  border-color: #2e6296;
+}
