@@ -150,7 +150,8 @@ export default function Profile() {
                     <th>
                       <FiFileText /> Input File
                     </th>
-                    <th>Output File
+                    <th>
+                      <FiCheckCircle /> Output File
                     </th>
                     <th>Input Tokens</th>
                     <th>Cached Tokens</th>

@@ -40,7 +40,7 @@ export default function Register() {
     try {
       const data = await signup({
         name,
-        email,
+        email,                          
         mobile_number,
         password: passwords.password,
       });
