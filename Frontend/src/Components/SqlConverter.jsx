@@ -17,8 +17,38 @@ import Chat from "./Chat";
 import Profile from "./Profile";
 import Convert from "./Convert";
 import Plugins from "./Plugins";
-import { showError } from "../utils/toast";
-import { CONVERSION_TYPES } from "../constants/conversionTypes";
+import {showSuccess, showError } from "../utils/toast";
+// import { CONVERSION_TYPES } from "../constants/conversionTypes";
+
+export function getConversionType(source, target, outputFormat) {
+  if (source === "sql" && target === "sparksql" && outputFormat === "ipynb") return "sql-sparksql";
+  if (source === "plsql" && target === "sparksql" && outputFormat === "ipynb") return "plsql-sparksql";
+  if (source === "sql" && target === "pyspark" && outputFormat === "ipynb") return "sql-pyspark";
+  if (source === "plsql" && target === "pyspark" && outputFormat === "ipynb") return "plsql-pyspark";
+  return "sql-sparksql";
+}
+
+// function notebookToPython(notebookJson) {
+//   try {
+//     const nb =
+//       typeof notebookJson === "string" ? JSON.parse(notebookJson) : notebookJson;
+//     const lines = [];
+//     (nb.cells || []).forEach((cell) => {
+//       const src = Array.isArray(cell.source)
+//         ? cell.source.join("")
+//         : cell.source || "";
+//       if (cell.cell_type === "markdown") {
+//         src.split("\n").forEach((l) => lines.push(`# ${l}`));
+//       } else {
+//         lines.push(src);
+//       }
+//       lines.push("");
+//     });
+//     return lines.join("\n");
+//   } catch {
+//     return "# Could not convert notebook to Python";
+//   }
+// }
 
 export default function App() {
   const [sqlText, setSqlText] = useState("");
@@ -29,7 +59,10 @@ export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const timerRef = useRef(null);
   const [activePage, setActivePage] = useState("Home");
-  const [conversionType, setConversionType] = useState("sql-sparksql");
+  // const [conversionType, setConversionType] = useState("sql-sparksql");
+  const [sourceType, setSourceType] = useState("sql");
+  const [targetType, setTargetType] = useState("sparksql");
+  const [outputFormat, setOutputFormat] = useState("ipynb");
 
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const userName = storedUser?.name || "User";
@@ -37,7 +70,7 @@ export default function App() {
   const handleUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
+ 
     setSelectedFile(file);
 
     const nameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
@@ -60,7 +93,7 @@ export default function App() {
     timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
 
     try {
-      const data = await generateGemini(selectedFile, conversionType);
+      const data = await generateGemini(selectedFile, getConversionType(sourceType, targetType, outputFormat));
       //setIpynbText(data);
       setIpynbText(JSON.stringify(data, null, 2));
     } catch (error) {
@@ -76,6 +109,9 @@ export default function App() {
 
   const handleDownload = () => {
     if (!ipynbText) return;
+
+    if (outputFormat === "ipynb"){
+
     const blob = new Blob([ipynbText], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -83,7 +119,21 @@ export default function App() {
     a.download = fileName ? `${fileName}.ipynb` : "converted_spark.ipynb";
     a.click();
     URL.revokeObjectURL(url);
-  };
+  }else{
+
+  // const handleDownloadPy = () => {
+  // if (!ipynbText) return;
+  const content = notebookToPython(ipynbText);
+  const blob = new Blob([content], { type: "text/x-python" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName ? `${fileName}.py` : "converted_spark.py";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+};
+
 
   return (
     <div className="app-container">
@@ -154,7 +204,7 @@ export default function App() {
               <div className="sidebar-avatar-letter">
                 {userName.charAt(0).toUpperCase()}
               </div>
-              {/* <CgProfile size={24} />                                                                                    */}
+              {/* <CgProfile size={24} /> */}
             </div>
           </div>
         </div>
@@ -187,7 +237,7 @@ export default function App() {
                 }}
               >
                 <div className="control-bar">
-                  <div className="control-left">
+                  {/* <div className="control-left">
                     <div className="upload-wrapper">
                       <label className="btn btn-convert">
                         Upload .txt
@@ -202,8 +252,32 @@ export default function App() {
                         {fileName ? `📄 ${fileName}.txt` : "No file selected"}
                       </span>
                     </div>
+                  </div> */}
+                  <div className="control-left">
+                    <div className="upload-wrapper">
+                      <select
+                        className="conversion-type-select"
+                        value={sourceType}
+                        onChange={(e) => setSourceType(e.target.value)}
+                        disabled={isConverting}
+                      >
+                        <option value="sql">SQL</option>
+                        <option value="plsql">PL/SQL</option>
+                      </select>
+                      <label className="btn btn-convert">
+                        Upload .txt
+                        <input
+                          type="file"
+                          accept=".txt"
+                          onChange={handleUpload}
+                          style={{ display: "none" }}
+                        />
+                      </label>
+                      <span className="file-name-label">
+                        {fileName ? `📄 ${fileName}.txt` : "No file selected"}
+                      </span>
+                    </div>
                   </div>
-
                   {/* <div className="control-center">
                     <button
                       className="btn btn-convert"
@@ -224,7 +298,7 @@ export default function App() {
                   </div> */}
 
                   <div className="control-center">
-                    <select
+                    {/* <select
                       className="conversion-type-select"
                       value={conversionType}
                       onChange={(e) => setConversionType(e.target.value)}
@@ -235,7 +309,42 @@ export default function App() {
                           {t.label}
                         </option>
                       ))}
+                    </select> */}
+                    <select
+                      className="conversion-type-select"
+                      value={targetType}
+                      onChange={(e) => setTargetType(e.target.value)}
+                      disabled={isConverting}
+                    >
+                      <option value="sparksql">SparkSQL</option>
+                      <option value="pyspark">PySpark</option>
                     </select>
+
+                    <div style={{ display: "flex", gap: "18px", alignItems: "center", marginTop: "4px" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "14px", color: "#193450", fontWeight: "bold" }}>
+                        <input
+                          type="radio"
+                          name="outputFormat"
+                          value="ipynb"
+                          checked={outputFormat === "ipynb"}
+                          onChange={() => setOutputFormat("ipynb")}
+                          style={{ accentColor: "#2e6296", width: "16px", height: "16px" }}
+                        />
+                        .ipynb
+                      </label>
+                      <label style={{ display: "flex", alignItems: "center", gap: "6px", cursor: "pointer", fontSize: "14px", color: "#193450", fontWeight: "bold" }}>
+                        <input
+                          type="radio"
+                          name="outputFormat"
+                          value="py"
+                          checked={outputFormat === "py"}
+                          onChange={() => setOutputFormat("py")}
+                          style={{ accentColor: "#2e6296", width: "16px", height: "16px" }}
+                        />
+                        .py
+                      </label>
+                    </div>
+
                     <button
                       className="btn btn-convert"
                       onClick={handleConvert}
@@ -254,7 +363,7 @@ export default function App() {
                     </span>
                   </div>
 
-                  <div className="control-right">
+                  {/* <div className="control-right">
                     <button
                       className="btn btn-convert"
                       onClick={handleDownload}
@@ -262,6 +371,22 @@ export default function App() {
                     >
                       Download .ipynb
                     </button>
+                  </div> */}
+                  <div className="control-right" style={{ gap: "10px" }}>
+                    <button
+                      className="btn btn-convert"
+                      onClick={handleDownload}
+                      disabled={!ipynbText}
+                    >
+                      Download {outputFormat === "ipynb" ? ".ipynb" : ".py"}
+                    </button>
+                    {/* <button
+                      className="btn btn-convert"
+                      onClick={handleDownloadPy}
+                      disabled={!ipynbText}
+                    >
+                      Download .py
+                    </button> */}
                   </div>
                 </div>
 
@@ -298,7 +423,7 @@ export default function App() {
                         placeholder="Converted .ipynb code will appear here..."
                       /> */}
                       <SyntaxHighlighter
-                        language="json"
+                        language={outputFormat === "ipynb" ? "json" : "python"}
                         style={vs}
                         showLineNumbers={true}
                         className="syntax-highlighter-custom"
