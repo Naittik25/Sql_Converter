@@ -306,6 +306,7 @@ body,
 .conversion-type-select {
   width: 180px;
   padding: 10px 12px;
+  text-align: center;
   border: 1px solid #dbe4ed;
   border-radius: 4px;
   font-size: 14px;

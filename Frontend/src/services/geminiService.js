@@ -1,29 +1,30 @@
 import axios from "../api/axios";
+import { getConversionType } from "../Components/Sqlconverter";
 
 // conversionType: "sql-sparksql" | "plsql-sparksql" | "sql-pyspark"
 
-export const generateGemini = async (file, conversionType = "sql-sparksql") => {
+export const generateGemini = async (file, getConversionType) => {
   const formData = new FormData();
   formData.append("target", file);
 
-  const res = await axios.post(`/gemini/${conversionType}/generate`, formData);
+  const res = await axios.post(`/gemini/${getConversionType()}/generate`, formData);
   return res.data;
 };
 
-export const getGeminiFiles = async (params, conversionType = "sql-sparksql") => {
-  const res = await axios.get(`/gemini/${conversionType}/files`, { params });
+export const getGeminiFiles = async (params, getConversionType) => {
+  const res = await axios.get(`/gemini/${getConversionType()}/files`, { params });
   return res.data;
 };
 
-// export const convertFromGithub = async (data, , conversionType = "sql-sparksql") => {
-//   const res = await axios.post(`/gemini/${conversionType}/convert-from-github`, data);
+// export const convertFromGithub = async (data, , getConversionType = "sql-sparksql") => {
+//   const res = await axios.post(`/gemini/${getConversionType()}/convert-from-github`, data);
 //   return res.data;
 // };
 
-export const convertFromGithub = async (data, conversionType = "sql-sparksql") => {
+export const convertFromGithub = async (data, getConversionType) => {
   const token = localStorage.getItem("token");
 
-  const response = await fetch(`http://localhost:8080/gemini/${conversionType}/convert-from-github`, {  
+  const response = await fetch(`http://localhost:8080/gemini/${getConversionType()}/convert-from-github`, {  
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -35,7 +36,7 @@ export const convertFromGithub = async (data, conversionType = "sql-sparksql") =
   return response; // ❗ return full response, not response.json()
 };
 
-export const convertSelected = async (data, conversionType = "sql-sparksql") => {
-  const res = await axios.post(`/gemini/${conversionType}/convert-selected`, data);
+export const convertSelected = async (data, getConversionType) => {
+  const res = await axios.post(`/gemini/${getConversionType()}/convert-selected`, data);
   return res.data;
 };
